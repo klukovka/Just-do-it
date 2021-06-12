@@ -1,8 +1,6 @@
 import 'dart:async';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:just_do_it/blocs/auth_bloc.dart';
 import 'package:just_do_it/pages/login_page.dart';
 import 'package:provider/provider.dart';

@@ -4,9 +4,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/button_view.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:just_do_it/blocs/auth_bloc.dart';
 import 'package:just_do_it/pages/home_page.dart';
 import 'package:just_do_it/pages/register_page.dart';
+import 'package:just_do_it/widgets/custom_toast.dart';
 import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
@@ -17,9 +19,11 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   late StreamSubscription<User?> loginStreamSubscription;
   late String _email, _password;
+  FToast fToast = FToast();
 
   @override
   void initState() {
+    fToast.init(context);
     var authBloc = Provider.of<AuthBloc>(context, listen: false);
     loginStreamSubscription = authBloc.currentUser.listen((fbUser) {
       if (fbUser != null) {
@@ -34,6 +38,14 @@ class _LoginPageState extends State<LoginPage> {
   void dispose() {
     loginStreamSubscription.cancel();
     super.dispose();
+  }
+
+  void _showToast(String message) {
+    fToast.showToast(
+      child: CustomToast(toastText: message),
+      gravity: ToastGravity.BOTTOM,
+      toastDuration: Duration(seconds: 2),
+    );
   }
 
   @override
@@ -69,19 +81,27 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
 
-        SignInButton(Buttons.Email, text: 'Sign In', onPressed: () {
+        SignInButton(Buttons.Email, text: 'Sign In', onPressed: () async {
           try {
-            authBloc.signInWithEmail(_email, _password);
+            User user = await authBloc.signInWithEmail(_email, _password);
+          } on FirebaseAuthException catch (ex) {
+            print(ex.message);
+            _showToast('${ex.message}');
           } catch (ex) {
-            print(ex);
+            print(ex.toString());
+            _showToast('Ooops! Something went wrong :(');
           }
         }),
         SignInButton(Buttons.Google, text: 'Sign In with Google',
-            onPressed: () {
+            onPressed: () async {
           try {
-            authBloc.loginGoogle();
+            User user = await authBloc.loginGoogle();
+          } on FirebaseAuthException catch (ex) {
+            print(ex.message);
+            _showToast('${ex.message}');
           } catch (ex) {
-            print(ex);
+            print(ex.toString());
+            _showToast('Ooops! Something went wrong :(');
           }
         }),
         // ignore: deprecated_member_use
