@@ -19,6 +19,12 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
+  final RegExp _emailRegExp = RegExp(
+    r'^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$',
+  );
+  final RegExp _passwordRegExp = RegExp(
+    r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$',
+  );
   late StreamSubscription<User?> loginStreamSubscription;
 
   FToast fToast = FToast();
@@ -60,6 +66,14 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
+  bool _isEmailValid(String email) {
+    return _emailRegExp.hasMatch(email);
+  }
+
+  bool _isPasswordValid(String password) {
+    return _passwordRegExp.hasMatch(password);
+  }
+
   @override
   Widget build(BuildContext context) {
     final authBloc = context.read<AuthBloc>();
@@ -67,94 +81,96 @@ class _RegisterPageState extends State<RegisterPage> {
       body: Form(
         key: _formKey,
         child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  keyboardType: TextInputType.name,
-                  decoration: InputDecoration(labelText: 'Name'),
-                  controller: _nameController,
-                  validator: (value) {
-                    if (value == null || value.length < 1)
-                      return 'Please enter name';
-                    _nameController.text = _name = value;
-                    return null;
-                  },
+          child: SingleChildScrollView(
+                      child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFormField(
+                    keyboardType: TextInputType.name,
+                    decoration: InputDecoration(labelText: 'Name'),
+                    controller: _nameController,
+                    validator: (value) {
+                      if (value == null || value.length < 1)
+                        return 'Please enter name';
+                      _nameController.text = _name = value;
+                      return null;
+                    },
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(labelText: 'Email'),
-                  controller: _emailController,
-                  validator: (value) {
-                    if (value == null || value.length < 1)
-                      return 'Please enter email';
-                    if (value.indexOf('@') < 1)
-                      return 'Please enter correct email';
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFormField(
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: InputDecoration(labelText: 'Email'),
+                    controller: _emailController,
+                    validator: (value) {
+                      if (value == null || value.length < 1)
+                        return 'Please enter email';
+                      if (_isEmailValid(value))
+                        return 'Please enter correct email';
 
-                    _emailController.text = _email = value;
-                    return null;
-                  },
+                      _emailController.text = _email = value;
+                      return null;
+                    },
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  obscureText: true,
-                  decoration: InputDecoration(labelText: 'Password'),
-                  controller: _passwordController,
-                  validator: (value) {
-                    if (value == null || value.length < 1)
-                      return 'Please enter password';
-                    if (value.length < 8)
-                      return 'Please enter correct password';
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFormField(
+                    obscureText: true,
+                    decoration: InputDecoration(labelText: 'Password'),
+                    controller: _passwordController,
+                    validator: (value) {
+                      if (value == null || value.length < 1)
+                        return 'Please enter password';
+                      if (_isPasswordValid(value))
+                        return 'Please enter correct password';
 
-                    _passwordController.text = _password = value;
-                    return null;
-                  },
+                      _passwordController.text = _password = value;
+                      return null;
+                    },
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  obscureText: true,
-                  decoration: InputDecoration(labelText: 'Repeat password'),
-                  validator: (value) {
-                    if (value == null || value.length < 1)
-                      return 'Please enter password';
-                    if (value.length < 8)
-                      return 'Please enter correct password';
-                    if (value != _password) return 'Passwords is not identical';
-                    return null;
-                  },
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFormField(
+                    obscureText: true,
+                    decoration: InputDecoration(labelText: 'Repeat password'),
+                    validator: (value) {
+                      if (value == null || value.length < 1)
+                        return 'Please enter password';
+                      if (value.length < 8)
+                        return 'Please enter correct password';
+                      if (value != _password) return 'Passwords is not identical';
+                      return null;
+                    },
+                  ),
                 ),
-              ),
-              SignInButton(Buttons.Email, text: 'Sign Up', onPressed: () async {
-                if (_formKey.currentState!.validate()) {
-                  try {
-                    User user =
-                        await authBloc.createUserWithEmail(_email, _password);
-                  } on FirebaseAuthException catch (ex) {
-                    print(ex.message);
-                    _showToast('${ex.message}');
-                  } catch (ex) {
-                    print(ex.toString());
-                    _showToast('Ooops! Something went wrong :(');
+                SignInButton(Buttons.Email, text: 'Sign Up', onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    try {
+                      User user =
+                          await authBloc.createUserWithEmail(_email, _password);
+                    } on FirebaseAuthException catch (ex) {
+                      print(ex.message);
+                      _showToast('${ex.message}');
+                    } catch (ex) {
+                      print(ex.toString());
+                      _showToast('Ooops! Something went wrong :(');
+                    }
+                  } else {
+                    _showToast('Inspect your data carefully');
                   }
-                } else {
-                  _showToast('Inspect your data carefully');
-                }
-              }),
-              // ignore: deprecated_member_use
-              FlatButton(
-                  onPressed: () => Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => LoginPage())),
-                  child: Text('I have an account')),
-            ],
+                }),
+                // ignore: deprecated_member_use
+                FlatButton(
+                    onPressed: () => Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(builder: (context) => LoginPage())),
+                    child: Text('I have an account')),
+              ],
+            ),
           ),
         ),
       ),
