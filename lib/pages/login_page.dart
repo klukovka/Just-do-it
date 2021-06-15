@@ -7,7 +7,7 @@ import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:just_do_it/blocs/auth_bloc.dart';
 import 'package:just_do_it/pages/home_page.dart';
-import 'package:just_do_it/pages/register_page.dart';
+import 'package:just_do_it/pages/reg_page.dart';
 import 'package:just_do_it/widgets/custom_toast.dart';
 import 'package:provider/provider.dart';
 
@@ -60,7 +60,8 @@ class _LoginPageState extends State<LoginPage> {
           padding: const EdgeInsets.all(8.0),
           child: TextField(
             keyboardType: TextInputType.emailAddress,
-            decoration: InputDecoration(hintText: 'Email'),
+            decoration:
+                InputDecoration(labelText: 'Email', icon: Icon(Icons.email)),
             onChanged: (value) {
               setState(() {
                 _email = value;
@@ -77,7 +78,8 @@ class _LoginPageState extends State<LoginPage> {
               });
             },
             obscureText: true,
-            decoration: InputDecoration(hintText: 'Password'),
+            decoration: InputDecoration(
+                labelText: 'Password', icon: Icon(Icons.password)),
           ),
         ),
 

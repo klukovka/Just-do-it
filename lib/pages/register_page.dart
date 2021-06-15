@@ -82,14 +82,17 @@ class _RegisterPageState extends State<RegisterPage> {
         key: _formKey,
         child: Center(
           child: SingleChildScrollView(
-                      child: Column(
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
                     keyboardType: TextInputType.name,
-                    decoration: InputDecoration(labelText: 'Name'),
+                    decoration: InputDecoration(
+                      labelText: 'Name',
+                      icon: Icon(Icons.account_circle),
+                    ),
                     controller: _nameController,
                     validator: (value) {
                       if (value == null || value.length < 1)
@@ -103,7 +106,8 @@ class _RegisterPageState extends State<RegisterPage> {
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
                     keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(labelText: 'Email'),
+                    decoration: InputDecoration(
+                        labelText: 'Email', icon: Icon(Icons.email)),
                     controller: _emailController,
                     validator: (value) {
                       if (value == null || value.length < 1)
@@ -120,7 +124,8 @@ class _RegisterPageState extends State<RegisterPage> {
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
                     obscureText: true,
-                    decoration: InputDecoration(labelText: 'Password'),
+                    decoration: InputDecoration(
+                        labelText: 'Password', icon: Icon(Icons.password)),
                     controller: _passwordController,
                     validator: (value) {
                       if (value == null || value.length < 1)
@@ -137,18 +142,22 @@ class _RegisterPageState extends State<RegisterPage> {
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
                     obscureText: true,
-                    decoration: InputDecoration(labelText: 'Repeat password'),
+                    decoration: InputDecoration(
+                        labelText: 'Repeat password',
+                        icon: Icon(Icons.password)),
                     validator: (value) {
                       if (value == null || value.length < 1)
                         return 'Please enter password';
                       if (value.length < 8)
                         return 'Please enter correct password';
-                      if (value != _password) return 'Passwords is not identical';
+                      if (value != _password)
+                        return 'Passwords is not identical';
                       return null;
                     },
                   ),
                 ),
-                SignInButton(Buttons.Email, text: 'Sign Up', onPressed: () async {
+                SignInButton(Buttons.Email, text: 'Sign Up',
+                    onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     try {
                       User user =
