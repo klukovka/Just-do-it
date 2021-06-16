@@ -162,26 +162,23 @@ class _RegisterPageState extends State<RegisterPage> {
                           try {
                             var email = '${validationBloc.getEmail}';
                             var password = '${validationBloc.getPassword}';
-                            print(email);
-                            print(password);
 
                             User user = await authBloc.createUserWithEmail(
                                 email, password);
                             toLogin();
                           } on FirebaseAuthException catch (ex) {
                             print(ex.message);
-                            //    _showToast('${ex.message}');
+                                _showToast('${ex.message}');
                           } catch (ex) {
                             print(ex.toString());
-                            //  _showToast('Ooops! Something wents wrong :(');
+                              _showToast('Ooops! Something wents wrong :(');
                           }
                         } else {
                           print('passwords');
-                          //  _showToast('Passwords is not identical');
-
+                            _showToast('Passwords is not identical');
                         }
                       } else {
-                        //  _showToast('Inspect your data carefully');
+                        _showToast('Inspect your data carefully');
                         print('invalid');
                       }
                     });
