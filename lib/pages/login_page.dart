@@ -6,8 +6,10 @@ import 'package:flutter_signin_button/button_view.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:just_do_it/blocs/auth_bloc.dart';
+import 'package:just_do_it/models/app_user.dart';
 import 'package:just_do_it/pages/home_page.dart';
 import 'package:just_do_it/pages/reg_page.dart';
+import 'package:just_do_it/providers/user_provider.dart';
 import 'package:just_do_it/widgets/custom_toast.dart';
 import 'package:provider/provider.dart';
 
@@ -51,6 +53,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final authBloc = context.read<AuthBloc>();
+    final userProvider = Provider.of<UserProvider>(context);
 
     return Scaffold(
         body: Column(
@@ -98,6 +101,12 @@ class _LoginPageState extends State<LoginPage> {
             onPressed: () async {
           try {
             User user = await authBloc.loginGoogle();
+            await userProvider.loadValues(AppUser(
+              name: user.displayName,
+              userId: user.uid,
+              auth: 'google',
+            ));
+            await userProvider.saveUser('google');
           } on FirebaseAuthException catch (ex) {
             print(ex.message);
             _showToast('${ex.message}');

@@ -8,6 +8,11 @@ class FirestoreService {
     return _db.collection('users').doc(user.userId).set(user.toMap);
   }
 
+  Future<AppUser> getUser(String userId) {
+    return _db.collection('users').doc(userId).get().then(
+        (value) => AppUser.fromFirebase(value.data() as Map<String, dynamic>));
+  }
+
   Future<void> removeUser(String userId) {
     return _db.collection('users').doc(userId).delete();
   }

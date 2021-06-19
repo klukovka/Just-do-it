@@ -7,6 +7,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:just_do_it/blocs/auth_bloc.dart';
 import 'package:just_do_it/blocs/validation_bloc.dart';
 import 'package:just_do_it/pages/login_page.dart';
+import 'package:just_do_it/providers/user_provider.dart';
 import 'package:just_do_it/widgets/custom_toast.dart';
 import 'package:provider/provider.dart';
 
@@ -51,6 +52,7 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Widget nameWidget(ValidationBloc bloc) {
+    final userProvider = Provider.of<UserProvider>(context);
     return StreamBuilder<Object>(
       stream: bloc.name,
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
@@ -64,7 +66,10 @@ class _RegisterPageState extends State<RegisterPage> {
               errorText:
                   '${snapshot.error}' == 'null' ? null : '${snapshot.error}',
             ),
-            onChanged: bloc.changeName,
+            onChanged: (value) {
+              bloc.changeName(value);
+              userProvider.changeName(value);
+            },
           ),
         );
       },
@@ -137,6 +142,7 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     final validationBloc = Provider.of<ValidationBloc>(context);
+    final userProvider = Provider.of<UserProvider>(context);
     final authBloc = context.read<AuthBloc>();
     return Scaffold(
       body: Center(
@@ -165,6 +171,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
                             User user = await authBloc.createUserWithEmail(
                                 email, password);
+                            await userProvider.changeUserId(user.uid);
+                            await userProvider.saveUser('email');
                             toLogin();
                           } on FirebaseAuthException catch (ex) {
                             print(ex.message);

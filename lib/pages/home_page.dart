@@ -2,7 +2,10 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:just_do_it/blocs/auth_bloc.dart';
+import 'package:just_do_it/models/app_user.dart';
 import 'package:just_do_it/pages/login_page.dart';
+import 'package:just_do_it/providers/user_provider.dart';
+import 'package:just_do_it/services/firestore_service.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -12,15 +15,21 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late StreamSubscription<User?> loginStreamSubscription;
+
   @override
   void initState() {
     var authBloc = Provider.of<AuthBloc>(context, listen: false);
-    loginStreamSubscription = authBloc.currentUser.listen((fbUser) {
+
+    loginStreamSubscription = authBloc.currentUser.listen((fbUser) async {
       if (fbUser == null) {
         Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => LoginPage()));
+      } else {
+        var userProvider = Provider.of<UserProvider>(context, listen: false);
+        await userProvider.getUser(fbUser.uid);
       }
     });
+
     super.initState();
   }
 
@@ -33,6 +42,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final authBloc = context.read<AuthBloc>();
+    var userProvider = Provider.of<UserProvider>(context, listen: false);
 
     return StreamBuilder<User?>(
         stream: authBloc.currentUser,
@@ -40,7 +50,7 @@ class _HomePageState extends State<HomePage> {
           if (!snapshot.hasData) return CircularProgressIndicator();
           return DefaultTabController(
             length: 3,
-                      child: Scaffold(
+            child: Scaffold(
               appBar: AppBar(
                 title: Text('Just do it'),
                 bottom: TabBar(
@@ -67,14 +77,14 @@ class _HomePageState extends State<HomePage> {
                           children: [
                             ListTile(
                               title: Text('Name'),
-                              subtitle: Text('${snapshot.data!.displayName}'),
+                              subtitle: Text('${userProvider.name}'),
                             ),
                             ListTile(
                               title: Text('Email'),
                               subtitle: Text('${snapshot.data!.email}'),
                             ),
                             // ignore: deprecated_member_use
-                            RaisedButton(
+                           if (userProvider.auth!='google') RaisedButton(
                               onPressed: () {},
                               child: Text('Change password'),
                             ),

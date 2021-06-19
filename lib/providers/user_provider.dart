@@ -19,13 +19,21 @@ class UserProvider with ChangeNotifier {
   }
 
   changeUserId(String value) {
-    _name = value;
+    _userId = value;
+    print('$_userId == $value');
     notifyListeners();
   }
 
   changeAuth(String value) {
     _auth = value;
     notifyListeners();
+  }
+
+  getUser(String id) async {
+    _userId = id;
+    var user = await firestoreService.getUser(id);
+    _name = user.name;
+    _auth = user.auth;
   }
 
   loadValues(AppUser user) {
