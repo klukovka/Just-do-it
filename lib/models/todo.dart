@@ -6,6 +6,7 @@ class ToDo {
   DateTime? date;
   bool? inTrash;
   String? userId;
+  String? color;
 
   ToDo({
     this.date,
@@ -15,6 +16,7 @@ class ToDo {
     this.title,
     this.toDoId,
     this.userId,
+    this.color,
   });
 
   Map<String, dynamic> get toMap => {
@@ -25,6 +27,7 @@ class ToDo {
         'date': date,
         'inTrash': inTrash,
         'userId': userId,
+        'color':color,
       };
 
   ToDo.fromFirebase(Map<String, dynamic> firestore)
@@ -34,5 +37,6 @@ class ToDo {
         done = firestore['done'],
         date = firestore['date'],
         inTrash = firestore['inTrash'],
+        color = firestore['color'],
         userId = firestore['userId'];
 }
