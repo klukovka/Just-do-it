@@ -83,11 +83,12 @@ class _HomePageState extends State<HomePage> {
                               title: Text('Email'),
                               subtitle: Text('${snapshot.data!.email}'),
                             ),
-                            // ignore: deprecated_member_use
-                           if (userProvider.auth!='google') RaisedButton(
-                              onPressed: () {},
-                              child: Text('Change password'),
-                            ),
+                            if (userProvider.auth != 'google')
+                              // ignore: deprecated_member_use
+                              RaisedButton(
+                                onPressed: () {},
+                                child: Text('Change password'),
+                              ),
                             // ignore: deprecated_member_use
                             RaisedButton(
                               onPressed: () {},
