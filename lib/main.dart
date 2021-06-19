@@ -16,14 +16,18 @@ class App extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return Provider<AuthBloc>(
-      create: (context) => AuthBloc(),
-      child: Provider(
-        create: (context) => ValidationBloc(),
-        child: MaterialApp(
-          title: 'Just do it',
-          home: LoginPage(),
+    return MultiProvider(
+      providers: [
+        Provider<AuthBloc>(
+          create: (context) => AuthBloc(),
         ),
+        Provider<ValidationBloc>(
+          create: (context) => ValidationBloc(),
+        ),
+      ],
+      child: MaterialApp(
+        title: 'Just do it',
+        home: LoginPage(),
       ),
     );
   }
