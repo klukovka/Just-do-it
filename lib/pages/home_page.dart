@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:just_do_it/blocs/auth_bloc.dart';
-import 'package:just_do_it/blocs/states/user_bloc.dart';
+import 'package:just_do_it/blocs/user_bloc.dart';
 import 'package:just_do_it/models/app_user.dart';
 import 'package:just_do_it/pages/login_page.dart';
 import 'package:just_do_it/providers/user_provider.dart';
@@ -85,13 +85,17 @@ class _HomePageState extends State<HomePage> {
                                 children: [
                                   ListTile(
                                     title: Text('Name'),
-                                    subtitle: Text('${userSnapshot.data!.name}'),
+                                    subtitle: userSnapshot.data!.name == null
+                                        ? Text('Loaging...')
+                                        : Text('${userSnapshot.data!.name}'),
                                   ),
                                   ListTile(
                                     title: Text('Email'),
-                                    subtitle: Text('${snapshot.data!.email}'),
+                                    subtitle: snapshot.data!.email == null
+                                        ? Text('Loaging...')
+                                        : Text('${snapshot.data!.email}'),
                                   ),
-                                  if (userSnapshot.data!.auth!= 'google')
+                                  if (userSnapshot.data!.auth != 'google')
                                     // ignore: deprecated_member_use
                                     RaisedButton(
                                       onPressed: () {},

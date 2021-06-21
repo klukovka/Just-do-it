@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:just_do_it/models/app_user.dart';
+import 'package:just_do_it/models/todo.dart';
 
 class FirestoreService {
   FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -15,5 +16,13 @@ class FirestoreService {
 
   Future<void> removeUser(String userId) {
     return _db.collection('users').doc(userId).delete();
+  }
+
+  Future<void> saveToDo(ToDo todo) {
+    return _db.collection('todos').doc(todo.toDoId).set(todo.toMap);
+  }
+
+  Future<void> removeToDo(String id) {
+    return _db.collection('todos').doc(id).delete();
   }
 }
