@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:just_do_it/blocs/auth_bloc.dart';
 import 'package:just_do_it/blocs/user_bloc.dart';
 import 'package:just_do_it/models/app_user.dart';
+import 'package:just_do_it/pages/edit_add_todo.dart';
 import 'package:just_do_it/pages/login_page.dart';
 import 'package:just_do_it/providers/user_provider.dart';
 import 'package:provider/provider.dart';
@@ -144,8 +145,11 @@ class _HomePageState extends State<HomePage> {
                     floatingActionButton: FloatingActionButton(
                       child: Icon(Icons.add),
                       onPressed: () {
-                        setState(() {});
-                        print(userProvider.name);
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                              builder: (context) => EditAddToDo()),
+                        );
+                        
                       },
                     ),
                   );

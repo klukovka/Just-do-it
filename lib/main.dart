@@ -1,9 +1,13 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:just_do_it/blocs/auth_bloc.dart';
+import 'package:just_do_it/blocs/color_bloc.dart';
+import 'package:just_do_it/blocs/states/color_state.dart';
 import 'package:just_do_it/blocs/user_bloc.dart';
 import 'package:just_do_it/blocs/validation_todo_bloc.dart';
 import 'package:just_do_it/pages/login_page.dart';
+import 'package:just_do_it/providers/todo_provider.dart';
 import 'package:just_do_it/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -27,7 +31,7 @@ class App extends StatelessWidget {
         Provider<ValidationBloc>(
           create: (context) => ValidationBloc(),
         ),
-         Provider<ValidationToDoBloc>(
+        Provider<ValidationToDoBloc>(
           create: (context) => ValidationToDoBloc(),
         ),
         Provider<UserBloc>(
@@ -35,6 +39,12 @@ class App extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (context) => UserProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => ToDoProvider(),
+        ),
+        BlocProvider(
+          create: (context) => ColorBloc(ColorState.fromColor('white')),
         ),
       ],
       child: MaterialApp(
