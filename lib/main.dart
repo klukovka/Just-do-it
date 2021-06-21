@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:just_do_it/blocs/auth_bloc.dart';
+import 'package:just_do_it/blocs/states/user_bloc.dart';
 import 'package:just_do_it/pages/login_page.dart';
 import 'package:just_do_it/providers/user_provider.dart';
 import 'package:provider/provider.dart';
@@ -24,6 +25,9 @@ class App extends StatelessWidget {
         ),
         Provider<ValidationBloc>(
           create: (context) => ValidationBloc(),
+        ),
+        Provider<UserBloc>(
+          create: (context) => UserBloc(),
         ),
         ChangeNotifierProvider(
           create: (context) => UserProvider(),

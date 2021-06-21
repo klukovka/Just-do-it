@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:just_do_it/blocs/auth_bloc.dart';
+import 'package:just_do_it/blocs/states/user_bloc.dart';
 import 'package:just_do_it/models/app_user.dart';
 import 'package:just_do_it/pages/login_page.dart';
 import 'package:just_do_it/providers/user_provider.dart';
@@ -45,101 +46,106 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final authBloc = context.read<AuthBloc>();
     var userProvider = Provider.of<UserProvider>(context, listen: false);
+    final userBloc = context.read<UserBloc>();
 
     return StreamBuilder<User?>(
         stream: authBloc.currentUser,
         builder: (context, snapshot) {
-       
           if (!snapshot.hasData) return CircularProgressIndicator();
           return DefaultTabController(
             length: 3,
-            child: Scaffold(
-              appBar: AppBar(
-                title: Text('Just do it'),
-                bottom: TabBar(
-                  tabs: [
-                    Tab(icon: Icon(Icons.lock_clock), text: 'To do'),
-                    Tab(icon: Icon(Icons.check_box), text: 'Done'),
-                    Tab(icon: Icon(Icons.note_rounded), text: 'All'),
-                  ],
-                ),
-              ),
-              body: TabBarView(children: [
-                Text('to do'),
-                Text('done'),
-                Text('all'),
-              ]),
-              drawer: Drawer(
-                child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 10),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
+            child: StreamBuilder<UserProvider>(
+                stream: userBloc.userProvider,
+                builder: (context, userSnapshot) {
+                  userBloc.changeUserProvider(userProvider);
+                  return Scaffold(
+                    appBar: AppBar(
+                      title: Text('Just do it'),
+                      bottom: TabBar(
+                        tabs: [
+                          Tab(icon: Icon(Icons.lock_clock), text: 'To do'),
+                          Tab(icon: Icon(Icons.check_box), text: 'Done'),
+                          Tab(icon: Icon(Icons.note_rounded), text: 'All'),
+                        ],
+                      ),
+                    ),
+                    body: TabBarView(children: [
+                      Text('to do'),
+                      Text('done'),
+                      Text('all'),
+                    ]),
+                    drawer: Drawer(
+                      child: Container(
+                        padding: EdgeInsets.symmetric(vertical: 10),
                         child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            ListTile(
-                              title: Text('Name'),
-                              subtitle: Text('${userProvider.name}'),
-                            ),
-                            ListTile(
-                              title: Text('Email'),
-                              subtitle: Text('${snapshot.data!.email}'),
-                            ),
-                            if (userProvider.auth != 'google')
-                              // ignore: deprecated_member_use
-                              RaisedButton(
-                                onPressed: () {},
-                                child: Text('Change password'),
+                            Container(
+                              child: Column(
+                                children: [
+                                  ListTile(
+                                    title: Text('Name'),
+                                    subtitle: Text('${userSnapshot.data!.name}'),
+                                  ),
+                                  ListTile(
+                                    title: Text('Email'),
+                                    subtitle: Text('${snapshot.data!.email}'),
+                                  ),
+                                  if (userSnapshot.data!.auth!= 'google')
+                                    // ignore: deprecated_member_use
+                                    RaisedButton(
+                                      onPressed: () {},
+                                      child: Text('Change password'),
+                                    ),
+                                  // ignore: deprecated_member_use
+                                  RaisedButton(
+                                    onPressed: () {},
+                                    child: Text('Change theme'),
+                                  ),
+                                ],
                               ),
-                            // ignore: deprecated_member_use
-                            RaisedButton(
-                              onPressed: () {},
-                              child: Text('Change theme'),
                             ),
+                            Container(
+                              child: Column(
+                                children: [
+                                  // ignore: deprecated_member_use
+                                  RaisedButton(
+                                    onPressed: () {
+                                      authBloc.logout();
+                                      try {
+                                        authBloc.logoutGoogle();
+                                      } catch (e) {
+                                        print(e);
+                                      }
+                                    },
+                                    child: Text('Log Out'),
+                                  ),
+                                  // ignore: deprecated_member_use
+                                  RaisedButton(
+                                    onPressed: () {},
+                                    child: Text('Recucle bin'),
+                                  ),
+                                  // ignore: deprecated_member_use
+                                  RaisedButton(
+                                    onPressed: () {},
+                                    child: Text('Delete an account'),
+                                  ),
+                                ],
+                              ),
+                            )
                           ],
                         ),
                       ),
-                      Container(
-                        child: Column(
-                          children: [
-                            // ignore: deprecated_member_use
-                            RaisedButton(
-                              onPressed: () {
-                                authBloc.logout();
-                                try {
-                                  authBloc.logoutGoogle();
-                                } catch (e) {
-                                  print(e);
-                                }
-                              },
-                              child: Text('Log Out'),
-                            ),
-                            // ignore: deprecated_member_use
-                            RaisedButton(
-                              onPressed: () {},
-                              child: Text('Recucle bin'),
-                            ),
-                            // ignore: deprecated_member_use
-                            RaisedButton(
-                              onPressed: () {},
-                              child: Text('Delete an account'),
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-              floatingActionButton: FloatingActionButton(
-                child: Icon(Icons.add),
-                onPressed: () {
-                  setState(() {});
-                  print(userProvider.name);
-                },
-              ),
-            ),
+                    ),
+                    floatingActionButton: FloatingActionButton(
+                      child: Icon(Icons.add),
+                      onPressed: () {
+                        setState(() {});
+                        print(userProvider.name);
+                      },
+                    ),
+                  );
+                }),
           );
         });
   }
