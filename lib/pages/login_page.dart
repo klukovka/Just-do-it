@@ -29,10 +29,14 @@ class _LoginPageState extends State<LoginPage> {
     var authBloc = Provider.of<AuthBloc>(context, listen: false);
     loginStreamSubscription = authBloc.currentUser.listen((fbUser) {
       if (fbUser != null) {
+        var userProvider = Provider.of<UserProvider>(context, listen: false);
+        userProvider.getUser(fbUser.uid);
+        print('${userProvider.name}==${fbUser.uid}');
         Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => HomePage()));
       }
     });
+
     super.initState();
   }
 
@@ -53,7 +57,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final authBloc = context.read<AuthBloc>();
-    final userProvider = Provider.of<UserProvider>(context);
 
     return Scaffold(
         body: Column(
@@ -88,7 +91,7 @@ class _LoginPageState extends State<LoginPage> {
 
         SignInButton(Buttons.Email, text: 'Sign In', onPressed: () async {
           try {
-            User user = await authBloc.signInWithEmail(_email, _password);
+            await authBloc.signInWithEmail(_email, _password);
           } on FirebaseAuthException catch (ex) {
             print(ex.message);
             _showToast('${ex.message}');
@@ -100,13 +103,7 @@ class _LoginPageState extends State<LoginPage> {
         SignInButton(Buttons.Google, text: 'Sign In with Google',
             onPressed: () async {
           try {
-            User user = await authBloc.loginGoogle();
-            await userProvider.loadValues(AppUser(
-              name: user.displayName,
-              userId: user.uid,
-              auth: 'google',
-            ));
-            await userProvider.saveUser('google');
+            await authBloc.loginGoogle();
           } on FirebaseAuthException catch (ex) {
             print(ex.message);
             _showToast('${ex.message}');

@@ -5,7 +5,6 @@ import 'package:just_do_it/blocs/auth_bloc.dart';
 import 'package:just_do_it/models/app_user.dart';
 import 'package:just_do_it/pages/login_page.dart';
 import 'package:just_do_it/providers/user_provider.dart';
-import 'package:just_do_it/services/firestore_service.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -19,18 +18,21 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     var authBloc = Provider.of<AuthBloc>(context, listen: false);
+    var userProvider = Provider.of<UserProvider>(context, listen: false);
 
-    loginStreamSubscription = authBloc.currentUser.listen((fbUser) async {
+    loginStreamSubscription = authBloc.currentUser.listen((fbUser) {
       if (fbUser == null) {
+        userProvider.loadValues(AppUser());
         Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => LoginPage()));
-      } else {
-        var userProvider = Provider.of<UserProvider>(context, listen: false);
-        await userProvider.getUser(fbUser.uid);
       }
     });
 
+    print('before init');
+
     super.initState();
+
+    print('after init');
   }
 
   @override
@@ -47,6 +49,7 @@ class _HomePageState extends State<HomePage> {
     return StreamBuilder<User?>(
         stream: authBloc.currentUser,
         builder: (context, snapshot) {
+       
           if (!snapshot.hasData) return CircularProgressIndicator();
           return DefaultTabController(
             length: 3,
@@ -128,6 +131,13 @@ class _HomePageState extends State<HomePage> {
                     ],
                   ),
                 ),
+              ),
+              floatingActionButton: FloatingActionButton(
+                child: Icon(Icons.add),
+                onPressed: () {
+                  setState(() {});
+                  print(userProvider.name);
+                },
               ),
             ),
           );
