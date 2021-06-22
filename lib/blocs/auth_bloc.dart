@@ -52,7 +52,7 @@ class AuthBloc {
       );
       //fire base sign in
 
-      final result = await authService.signInWithCredential(credential);
+      await authService.signInWithCredential(credential);
     } on PlatformException catch (e) {
       throw PlatformException(code: e.code, message: e.message);
     } on FirebaseAuthException catch (e) {

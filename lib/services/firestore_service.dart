@@ -25,4 +25,47 @@ class FirestoreService {
   Future<void> removeToDo(String id) {
     return _db.collection('todos').doc(id).delete();
   }
+
+  Stream<List<ToDo>> getAllToDos(String userId) {
+    return _db
+        .collection('todos')
+        .where('userId', isEqualTo: userId)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((document) => ToDo.fromFirestore(document.data()))
+            .toList());
+  }
+
+  Stream<List<ToDo>> getDoneToDos(String userId) {
+    return _db
+        .collection('todos')
+        .where('userId', isEqualTo: userId)
+        .where('done', isEqualTo: true)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((document) => ToDo.fromFirestore(document.data()))
+            .toList());
+  }
+
+  Stream<List<ToDo>> getNotDoneToDos(String userId) {
+    return _db
+        .collection('todos')
+        .where('userId', isEqualTo: userId)
+        .where('done', isEqualTo: false)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((document) => ToDo.fromFirestore(document.data()))
+            .toList());
+  }
+
+  Stream<List<ToDo>> getToDosInTrash(String userId) {
+    return _db
+        .collection('todos')
+        .where('userId', isEqualTo: userId)
+        .where('inTrash', isEqualTo: true)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((document) => ToDo.fromFirestore(document.data()))
+            .toList());
+  }
 }

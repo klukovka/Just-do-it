@@ -64,9 +64,19 @@ class ToDoProvider with ChangeNotifier {
     _color = todo.color;
   }
 
+  nullToDo() {
+    _toDoId = null;
+    _title = null;
+    _description = null;
+    _done = false;
+    _inTrash = false;
+    _userId = null;
+    _color = 'white';
+  }
+
   saveToDo() {
     var todo = ToDo(
-      color: color,
+      color: color ?? 'white',
       description: description,
       done: done,
       inTrash: inTrash,

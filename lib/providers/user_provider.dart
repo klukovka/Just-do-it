@@ -1,6 +1,5 @@
 import 'package:flutter/widgets.dart';
 import 'package:just_do_it/models/app_user.dart';
-import 'package:just_do_it/models/todo.dart';
 import 'package:just_do_it/services/firestore_service.dart';
 
 class UserProvider with ChangeNotifier {
@@ -13,6 +12,7 @@ class UserProvider with ChangeNotifier {
   String? get userId => _userId;
   String? get name => _name;
   String? get auth => _auth;
+
 
   changeName(String value) {
     _name = value;

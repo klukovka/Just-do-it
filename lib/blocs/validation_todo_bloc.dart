@@ -26,7 +26,7 @@ class ValidationToDoBloc {
 
   final validateTitle =
       StreamTransformer<String, String>.fromHandlers(handleData: (title, sink) {
-    if (title == null || title.length == 0) {
+    if (title.length == 0) {
       sink.addError('Title lenght must be at least 1 character');
     } else {
       sink.add(title);
@@ -35,7 +35,7 @@ class ValidationToDoBloc {
 
   final validateDescription =
       StreamTransformer<String, String>.fromHandlers(handleData: (decs, sink) {
-    if (decs == null || decs.length == 0) {
+    if (decs.length == 0) {
       sink.addError('Description lenght must be at least 1 character');
     } else {
       sink.add(decs);

@@ -6,7 +6,9 @@ import 'package:just_do_it/blocs/user_bloc.dart';
 import 'package:just_do_it/models/app_user.dart';
 import 'package:just_do_it/pages/edit_add_todo.dart';
 import 'package:just_do_it/pages/login_page.dart';
+import 'package:just_do_it/pages/todos_line.dart';
 import 'package:just_do_it/providers/user_provider.dart';
+import 'package:just_do_it/services/firestore_service.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -46,8 +48,9 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final authBloc = context.read<AuthBloc>();
-    var userProvider = Provider.of<UserProvider>(context, listen: false);
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
     final userBloc = context.read<UserBloc>();
+    final firestore = FirestoreService();
 
     return StreamBuilder<User?>(
         stream: authBloc.currentUser,
@@ -71,9 +74,15 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     body: TabBarView(children: [
-                      Text('to do'),
-                      Text('done'),
-                      Text('all'),
+                      ToDosLine(
+                          todos: firestore
+                              .getNotDoneToDos('${userSnapshot.data!.userId}')),
+                      ToDosLine(
+                          todos: firestore
+                              .getDoneToDos('${userSnapshot.data!.userId}')),
+                      ToDosLine(
+                          todos: firestore
+                              .getAllToDos('${userSnapshot.data!.userId}')),
                     ]),
                     drawer: Drawer(
                       child: Container(
@@ -149,7 +158,6 @@ class _HomePageState extends State<HomePage> {
                           MaterialPageRoute(
                               builder: (context) => EditAddToDo()),
                         );
-                        
                       },
                     ),
                   );

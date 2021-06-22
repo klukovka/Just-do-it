@@ -5,6 +5,7 @@ import 'package:just_do_it/blocs/color_bloc.dart';
 import 'package:just_do_it/blocs/events/color_event.dart';
 import 'package:just_do_it/blocs/states/color_state.dart';
 import 'package:just_do_it/blocs/validation_todo_bloc.dart';
+import 'package:just_do_it/models/todo.dart';
 import 'package:just_do_it/providers/todo_provider.dart';
 import 'package:just_do_it/providers/user_provider.dart';
 import 'package:just_do_it/widgets/custom_toast.dart';
@@ -188,6 +189,8 @@ class _EditAddToDoState extends State<EditAddToDo> {
     final validationBloc = Provider.of<ValidationToDoBloc>(context);
     final userProvider = Provider.of<UserProvider>(context);
     final todoProvider = Provider.of<ToDoProvider>(context);
+    ColorBloc _bloc = BlocProvider.of<ColorBloc>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit'),
@@ -205,7 +208,9 @@ class _EditAddToDoState extends State<EditAddToDo> {
       floatingActionButton: StreamBuilder<bool>(
           stream: validationBloc.formValid,
           builder: (context, snapshot) {
-            bool correct = snapshot.hasData;
+            bool correct = snapshot.hasData &&
+                todoProvider.title != null &&
+                todoProvider.description != null;
             return FloatingActionButton(
               onPressed: () {
                 if (correct) {
@@ -213,6 +218,9 @@ class _EditAddToDoState extends State<EditAddToDo> {
                   todoProvider.changeInTrash(false);
                   todoProvider.changeUserId('${userProvider.userId}');
                   todoProvider.saveToDo();
+                  todoProvider.loadValues(ToDo());
+                  _bloc.add(ColorEvent.white);
+                  todoProvider.nullToDo();
                   Navigator.of(context).pop();
                 } else {
                   _showToast('Input correct data');

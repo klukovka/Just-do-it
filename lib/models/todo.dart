@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class ToDo {
   String? toDoId;
   String? title;
@@ -24,10 +26,10 @@ class ToDo {
         'done': done,
         'inTrash': inTrash,
         'userId': userId,
-        'color':color,
+        'color': color,
       };
 
-  ToDo.fromFirebase(Map<String, dynamic> firestore)
+  ToDo.fromFirestore(Map<String, dynamic> firestore)
       : toDoId = firestore['toDoId'],
         title = firestore['title'],
         description = firestore['description'],
@@ -35,4 +37,25 @@ class ToDo {
         inTrash = firestore['inTrash'],
         color = firestore['color'],
         userId = firestore['userId'];
+
+  Color get todoColor {
+    switch (color) {
+      case 'red':
+        return Colors.red;
+      case 'orange':
+        return Colors.orange;
+      case 'yellow':
+        return Colors.yellow;
+      case 'green':
+        return Colors.green;
+      case 'blue':
+        return Colors.lightBlue;
+      case 'darkblue':
+        return Colors.blue;
+      case 'purple':
+        return Colors.purple;
+      default:
+        return Colors.white;
+    }
+  }
 }

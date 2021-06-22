@@ -20,7 +20,7 @@ Future<void> main() async {
 }
 
 class App extends StatelessWidget {
-  // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -46,6 +46,7 @@ class App extends StatelessWidget {
         BlocProvider(
           create: (context) => ColorBloc(ColorState.fromColor('white')),
         ),
+         
       ],
       child: MaterialApp(
         title: 'Just do it',
