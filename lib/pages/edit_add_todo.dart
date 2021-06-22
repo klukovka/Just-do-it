@@ -100,7 +100,7 @@ class _EditAddToDoState extends State<EditAddToDo> {
         builder: (context, streamSnapshot) {
           return BlocBuilder<ColorBloc, ColorState>(
               builder: (context, snapshot) {
-          //  snapshot = ColorState.fromColor('${todoProvider.color}');
+            //  snapshot = ColorState.fromColor('${todoProvider.color}');
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: ListTile(
@@ -115,56 +115,63 @@ class _EditAddToDoState extends State<EditAddToDo> {
                         child: coloredBox(snapshot, Colors.red),
                         onTap: () {
                           _bloc.add(ColorEvent.red);
-                          bloc.changeColor(snapshot);
-                          todoProvider.changeColor('${snapshot.colorName}');
+                          bloc.changeColor(
+                              ColorState(color: Colors.red, colorName: 'red'));
+                          todoProvider.changeColor('red');
                         },
                       ),
                       GestureDetector(
                         child: coloredBox(snapshot, Colors.orange),
                         onTap: () {
                           _bloc.add(ColorEvent.orange);
-                          bloc.changeColor(snapshot);
-                          todoProvider.changeColor('${snapshot.colorName}');
+                          bloc.changeColor(ColorState(
+                              color: Colors.orange, colorName: 'orange'));
+                          todoProvider.changeColor('orange');
                         },
                       ),
                       GestureDetector(
                         child: coloredBox(snapshot, Colors.yellow),
                         onTap: () {
                           _bloc.add(ColorEvent.yellow);
-                          bloc.changeColor(snapshot);
-                          todoProvider.changeColor('${snapshot.colorName}');
+                          bloc.changeColor(ColorState(
+                              color: Colors.yellow, colorName: 'yellow'));
+                          todoProvider.changeColor('yellow');
                         },
                       ),
                       GestureDetector(
                         child: coloredBox(snapshot, Colors.green),
                         onTap: () {
                           _bloc.add(ColorEvent.green);
-                          bloc.changeColor(snapshot);
-                          todoProvider.changeColor('${snapshot.colorName}');
+                          bloc.changeColor(ColorState(
+                              color: Colors.green, colorName: 'green'));
+                          todoProvider.changeColor('green');
                         },
                       ),
                       GestureDetector(
                         child: coloredBox(snapshot, Colors.lightBlue),
                         onTap: () {
                           _bloc.add(ColorEvent.blue);
-                          bloc.changeColor(snapshot);
-                          todoProvider.changeColor('${snapshot.colorName}');
+                          bloc.changeColor(ColorState(
+                              color: Colors.lightBlue, colorName: 'blue'));
+                          todoProvider.changeColor('blue');
                         },
                       ),
                       GestureDetector(
                         child: coloredBox(snapshot, Colors.blue),
                         onTap: () {
                           _bloc.add(ColorEvent.darkblue);
-                          bloc.changeColor(snapshot);
-                          todoProvider.changeColor('${snapshot.colorName}');
+                          bloc.changeColor(ColorState(
+                              color: Colors.blue, colorName: 'darkblue'));
+                          todoProvider.changeColor('darkblue');
                         },
                       ),
                       GestureDetector(
                         child: coloredBox(snapshot, Colors.purple),
                         onTap: () {
                           _bloc.add(ColorEvent.purple);
-                          bloc.changeColor(snapshot);
-                          todoProvider.changeColor('${snapshot.colorName}');
+                          bloc.changeColor(ColorState(
+                              color: Colors.purple, colorName: 'purple'));
+                          todoProvider.changeColor('purple');
                         },
                       ),
                     ],
@@ -180,6 +187,7 @@ class _EditAddToDoState extends State<EditAddToDo> {
   Widget build(BuildContext context) {
     final validationBloc = Provider.of<ValidationToDoBloc>(context);
     final userProvider = Provider.of<UserProvider>(context);
+    final todoProvider = Provider.of<ToDoProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit'),
@@ -194,6 +202,25 @@ class _EditAddToDoState extends State<EditAddToDo> {
           ],
         ),
       ),
+      floatingActionButton: StreamBuilder<bool>(
+          stream: validationBloc.formValid,
+          builder: (context, snapshot) {
+            bool correct = snapshot.hasData;
+            return FloatingActionButton(
+              onPressed: () {
+                if (correct) {
+                  todoProvider.changeDone(false);
+                  todoProvider.changeInTrash(false);
+                  todoProvider.changeUserId('${userProvider.userId}');
+                  todoProvider.saveToDo();
+                  Navigator.of(context).pop();
+                } else {
+                  _showToast('Input correct data');
+                }
+              },
+              child: Icon(Icons.check),
+            );
+          }),
     );
   }
 }

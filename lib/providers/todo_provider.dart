@@ -9,7 +9,6 @@ class ToDoProvider with ChangeNotifier {
   String? _title;
   String? _description;
   bool? _done;
-  DateTime? _date;
   bool? _inTrash;
   String? _userId;
   String? _color;
@@ -20,7 +19,6 @@ class ToDoProvider with ChangeNotifier {
   String? get title => _title;
   String? get description => _description;
   bool? get done => _done;
-  DateTime? get date => _date;
   bool? get inTrash => _inTrash;
   String? get userId => _userId;
   String? get color => _color;
@@ -41,11 +39,6 @@ class ToDoProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  changeDate(DateTime value) {
-    _date = value;
-    notifyListeners();
-  }
-
   changeInTrash(bool value) {
     _inTrash = value;
     notifyListeners();
@@ -62,28 +55,32 @@ class ToDoProvider with ChangeNotifier {
   }
 
   loadValues(ToDo todo) {
-    _toDoId = todo.toDoId;
+    _toDoId = todo.toDoId ?? uuid.v4();
     _title = todo.title;
     _description = todo.description;
     _done = todo.done;
-    _date = todo.date;
     _inTrash = todo.inTrash;
     _userId = todo.userId;
     _color = todo.color;
   }
 
   saveToDo() {
-    String? tdId = toDoId == null ? uuid.v4() : toDoId;
     var todo = ToDo(
       color: color,
-      date: date,
       description: description,
       done: done,
       inTrash: inTrash,
       title: title,
-      toDoId: tdId,
+      toDoId: toDoId ?? uuid.v4(),
       userId: userId,
     );
+    print(todo.color);
+    print(todo.description);
+    print(todo.done);
+    print(todo.inTrash);
+    print(todo.title);
+    print(todo.toDoId);
+    print(todo.userId);
     firestoreService.saveToDo(todo);
   }
 

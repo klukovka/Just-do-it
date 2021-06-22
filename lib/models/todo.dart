@@ -3,13 +3,11 @@ class ToDo {
   String? title;
   String? description;
   bool? done;
-  DateTime? date;
   bool? inTrash;
   String? userId;
   String? color;
 
   ToDo({
-    this.date,
     this.description,
     this.done,
     this.inTrash,
@@ -24,7 +22,6 @@ class ToDo {
         'title': title,
         'description': description,
         'done': done,
-        'date': date,
         'inTrash': inTrash,
         'userId': userId,
         'color':color,
@@ -35,7 +32,6 @@ class ToDo {
         title = firestore['title'],
         description = firestore['description'],
         done = firestore['done'],
-        date = firestore['date'],
         inTrash = firestore['inTrash'],
         color = firestore['color'],
         userId = firestore['userId'];
