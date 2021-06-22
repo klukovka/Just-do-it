@@ -12,6 +12,17 @@ class ToDosLine extends StatelessWidget {
     return StreamBuilder<List<ToDo>>(
         stream: todos,
         builder: (context, snapshot) {
+          if (!snapshot.hasData)
+            return Center(
+                child: SizedBox(
+              child: CircularProgressIndicator(),
+              width: 100,
+              height: 100,
+            ));
+          if (snapshot.hasError)
+            return Center(
+              child: Text('Error'),
+            );
           List<ToDo> list = snapshot.data ?? [];
           return ListView.builder(
             itemBuilder: (context, index) => ToDoLine(todo: list[index]),
