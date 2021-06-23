@@ -39,6 +39,7 @@ dependencies:
   flutter_bloc: ^7.0.1
   rxdart: ^0.27.1
   uuid: ^3.0.4
+  swipe_to: ^0.0.1+8
 
 dev_dependencies:
   flutter_test:

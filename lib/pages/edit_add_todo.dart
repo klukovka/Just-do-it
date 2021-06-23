@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -209,45 +211,56 @@ class _EditAddToDoState extends State<EditAddToDo> {
     final todoProvider = Provider.of<ToDoProvider>(context);
     final _bloc = BlocProvider.of<ColorBloc>(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.todo == null ? 'Add' : 'Edit'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            titleWidget(validationBloc),
-            descriptionWidget(validationBloc),
-            colorsWidget(validationBloc)
-          ],
+    return BlocBuilder<ColorBloc, ColorState>(
+        builder: (context, colorSnapshot) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(
+            widget.todo == null ? 'Add' : 'Edit',
+            style: TextStyle(
+              color: colorSnapshot.color == Colors.white
+                  ? Colors.black
+                  : Colors.white,
+            ),
+          ),
+          backgroundColor: colorSnapshot.color,
         ),
-      ),
-      floatingActionButton: StreamBuilder<bool>(
-          stream: validationBloc.formValid,
-          builder: (context, snapshot) {
-            bool correct = snapshot.hasData &&
-                todoProvider.title != null &&
-                todoProvider.description != null;
-            return FloatingActionButton(
-              onPressed: () {
-                if (correct) {
-                  if (widget.todo == null) {
-                    todoProvider.changeDone(false);
-                    todoProvider.changeInTrash(false);
-                    todoProvider.changeUserId('${userProvider.userId}');
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              titleWidget(validationBloc),
+              descriptionWidget(validationBloc),
+              colorsWidget(validationBloc)
+            ],
+          ),
+        ),
+        floatingActionButton: StreamBuilder<bool>(
+            stream: validationBloc.formValid,
+            builder: (context, snapshot) {
+              bool correct = snapshot.hasData &&
+                  todoProvider.title != null &&
+                  todoProvider.description != null;
+              return FloatingActionButton(
+                onPressed: () {
+                  if (correct) {
+                    if (widget.todo == null) {
+                      todoProvider.changeDone(false);
+                      todoProvider.changeInTrash(false);
+                      todoProvider.changeUserId('${userProvider.userId}');
+                    }
+                    todoProvider.saveToDo();
+                    _bloc.add(ColorEvent.white);
+                    todoProvider.nullToDo();
+                    Navigator.of(context).pop();
+                  } else {
+                    _showToast('Input correct data');
                   }
-                  todoProvider.saveToDo();
-                  _bloc.add(ColorEvent.white);
-                  todoProvider.nullToDo();
-                  Navigator.of(context).pop();
-                } else {
-                  _showToast('Input correct data');
-                }
-              },
-              child: Icon(Icons.check),
-            );
-          }),
-    );
+                },
+                child: Icon(Icons.check),
+              );
+            }),
+      );
+    });
   }
 }
