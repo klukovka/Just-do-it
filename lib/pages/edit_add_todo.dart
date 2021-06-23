@@ -12,18 +12,30 @@ import 'package:just_do_it/widgets/custom_toast.dart';
 import 'package:provider/provider.dart';
 
 class EditAddToDo extends StatefulWidget {
-  EditAddToDo({Key? key}) : super(key: key);
+  ToDo? todo;
+  EditAddToDo({Key? key, this.todo}) : super(key: key);
 
   @override
   _EditAddToDoState createState() => _EditAddToDoState();
 }
 
 class _EditAddToDoState extends State<EditAddToDo> {
+  final titleController = TextEditingController();
+  final descController = TextEditingController();
   FToast fToast = FToast();
 
   @override
   void initState() {
+    final colorBloc = BlocProvider.of<ColorBloc>(context);
+    colorBloc.add(ColorEvent.white);
     fToast.init(context);
+    if (widget.todo == null) {
+      titleController.text = '';
+      descController.text = '';
+    } else {
+      titleController.text = widget.todo!.title!;
+      descController.text = widget.todo!.description!;
+    }
     super.initState();
   }
 
@@ -37,12 +49,14 @@ class _EditAddToDoState extends State<EditAddToDo> {
 
   Widget titleWidget(ValidationToDoBloc bloc) {
     final todoProvider = Provider.of<ToDoProvider>(context);
+
     return StreamBuilder<String>(
         stream: bloc.title,
         builder: (context, snapshot) {
           return Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
+              controller: titleController,
               keyboardType: TextInputType.name,
               decoration: InputDecoration(
                 labelText: 'Name',
@@ -61,12 +75,15 @@ class _EditAddToDoState extends State<EditAddToDo> {
 
   Widget descriptionWidget(ValidationToDoBloc bloc) {
     final todoProvider = Provider.of<ToDoProvider>(context);
+
     return StreamBuilder<String>(
         stream: bloc.description,
         builder: (context, snapshot) {
           return Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
+              controller: descController,
+              maxLines: 6,
               keyboardType: TextInputType.name,
               decoration: InputDecoration(
                 labelText: 'Description',
@@ -96,6 +113,7 @@ class _EditAddToDoState extends State<EditAddToDo> {
   Widget colorsWidget(ValidationToDoBloc bloc) {
     final todoProvider = Provider.of<ToDoProvider>(context);
     ColorBloc _bloc = BlocProvider.of<ColorBloc>(context);
+    if (widget.todo != null) _bloc.add(todoProvider.getColorEvent());
     return StreamBuilder<ColorState>(
         stream: bloc.color,
         builder: (context, streamSnapshot) {
@@ -189,11 +207,11 @@ class _EditAddToDoState extends State<EditAddToDo> {
     final validationBloc = Provider.of<ValidationToDoBloc>(context);
     final userProvider = Provider.of<UserProvider>(context);
     final todoProvider = Provider.of<ToDoProvider>(context);
-    ColorBloc _bloc = BlocProvider.of<ColorBloc>(context);
+    final _bloc = BlocProvider.of<ColorBloc>(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit'),
+        title: Text(widget.todo == null ? 'Add' : 'Edit'),
       ),
       body: Center(
         child: Column(
@@ -214,11 +232,12 @@ class _EditAddToDoState extends State<EditAddToDo> {
             return FloatingActionButton(
               onPressed: () {
                 if (correct) {
-                  todoProvider.changeDone(false);
-                  todoProvider.changeInTrash(false);
-                  todoProvider.changeUserId('${userProvider.userId}');
+                  if (widget.todo == null) {
+                    todoProvider.changeDone(false);
+                    todoProvider.changeInTrash(false);
+                    todoProvider.changeUserId('${userProvider.userId}');
+                  }
                   todoProvider.saveToDo();
-                  todoProvider.loadValues(ToDo());
                   _bloc.add(ColorEvent.white);
                   todoProvider.nullToDo();
                   Navigator.of(context).pop();

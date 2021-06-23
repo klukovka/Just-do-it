@@ -1,12 +1,16 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:just_do_it/blocs/auth_bloc.dart';
+import 'package:just_do_it/blocs/color_bloc.dart';
+import 'package:just_do_it/blocs/events/color_event.dart';
 import 'package:just_do_it/blocs/user_bloc.dart';
 import 'package:just_do_it/models/app_user.dart';
 import 'package:just_do_it/pages/edit_add_todo.dart';
 import 'package:just_do_it/pages/login_page.dart';
 import 'package:just_do_it/pages/todos_line.dart';
+import 'package:just_do_it/providers/todo_provider.dart';
 import 'package:just_do_it/providers/user_provider.dart';
 import 'package:just_do_it/services/firestore_service.dart';
 import 'package:provider/provider.dart';
@@ -21,8 +25,11 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    var authBloc = Provider.of<AuthBloc>(context, listen: false);
-    var userProvider = Provider.of<UserProvider>(context, listen: false);
+    final authBloc = Provider.of<AuthBloc>(context, listen: false);
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final todoProvider = Provider.of<ToDoProvider>(context);
+
+    todoProvider.nullToDo();
 
     loginStreamSubscription = authBloc.currentUser.listen((fbUser) {
       if (fbUser == null) {
@@ -32,11 +39,7 @@ class _HomePageState extends State<HomePage> {
       }
     });
 
-    print('before init');
-
     super.initState();
-
-    print('after init');
   }
 
   @override

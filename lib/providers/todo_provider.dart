@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:just_do_it/blocs/events/color_event.dart';
 import 'package:just_do_it/models/todo.dart';
 import 'package:just_do_it/services/firestore_service.dart';
 import 'package:uuid/uuid.dart';
@@ -62,6 +63,13 @@ class ToDoProvider with ChangeNotifier {
     _inTrash = todo.inTrash;
     _userId = todo.userId;
     _color = todo.color;
+    print(todo.color);
+    print(todo.description);
+    print(todo.done);
+    print(todo.inTrash);
+    print(todo.title);
+    print(todo.toDoId);
+    print(todo.userId);
   }
 
   nullToDo() {
@@ -74,6 +82,27 @@ class ToDoProvider with ChangeNotifier {
     _color = 'white';
   }
 
+  getColorEvent() {
+    switch (color) {
+      case 'red':
+        return ColorEvent.red;
+      case 'orange':
+        return ColorEvent.orange;
+      case 'yellow':
+        return ColorEvent.yellow;
+      case 'green':
+        return ColorEvent.green;
+      case 'blue':
+        return ColorEvent.blue;
+      case 'darkblue':
+        return ColorEvent.darkblue;
+      case 'purple':
+        return ColorEvent.purple;
+      default:
+        return ColorEvent.white;
+    }
+  }
+
   saveToDo() {
     var todo = ToDo(
       color: color ?? 'white',
@@ -84,13 +113,7 @@ class ToDoProvider with ChangeNotifier {
       toDoId: toDoId ?? uuid.v4(),
       userId: userId,
     );
-    print(todo.color);
-    print(todo.description);
-    print(todo.done);
-    print(todo.inTrash);
-    print(todo.title);
-    print(todo.toDoId);
-    print(todo.userId);
+
     firestoreService.saveToDo(todo);
   }
 

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:just_do_it/models/todo.dart';
+import 'package:just_do_it/pages/edit_add_todo.dart';
+import 'package:just_do_it/providers/todo_provider.dart';
 import 'package:just_do_it/services/firestore_service.dart';
+import 'package:provider/provider.dart';
 
 class ToDoLine extends StatelessWidget {
   ToDo todo;
@@ -10,6 +13,7 @@ class ToDoLine extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final firestore = FirestoreService();
+    final todoPrvider = Provider.of<ToDoProvider>(context);
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Card(
@@ -22,6 +26,15 @@ class ToDoLine extends StatelessWidget {
               ? Icon(Icons.check_box_outline_blank)
               : Icon(Icons.check_box),
           onTap: () {
+            todoPrvider.loadValues(todo);
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                  builder: (context) => EditAddToDo(
+                        todo: todo,
+                      )),
+            );
+          },
+          onLongPress: () {
             if (todo.done == false)
               todo.done = true;
             else
