@@ -27,7 +27,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     final authBloc = Provider.of<AuthBloc>(context, listen: false);
     final userProvider = Provider.of<UserProvider>(context, listen: false);
-    final todoProvider = Provider.of<ToDoProvider>(context);
+    final todoProvider = Provider.of<ToDoProvider>(context, listen: false);
 
     todoProvider.nullToDo();
 
