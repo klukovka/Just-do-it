@@ -13,6 +13,7 @@ import 'package:just_do_it/providers/todo_provider.dart';
 import 'package:just_do_it/providers/user_provider.dart';
 import 'package:just_do_it/services/firestore_service.dart';
 import 'package:provider/provider.dart';
+import 'package:swipeable_page_route/swipeable_page_route.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -158,7 +159,7 @@ class _HomePageState extends State<HomePage> {
                                 RaisedButton(
                                   onPressed: () {
                                     Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => RecycleBin()),
+                        SwipeablePageRoute(builder: (context) => RecycleBin()),
                       );
                                   },
                                   child: Text('Recycle bin'),
@@ -179,7 +180,7 @@ class _HomePageState extends State<HomePage> {
                     child: Icon(Icons.add),
                     onPressed: () {
                       Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => EditAddToDo()),
+                        SwipeablePageRoute(builder: (context) => EditAddToDo()),
                       );
                     },
                   ),
