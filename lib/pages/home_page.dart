@@ -37,7 +37,7 @@ class _HomePageState extends State<HomePage> {
             MaterialPageRoute(builder: (context) => LoginPage()));
       }
     });
-  
+
     super.initState();
   }
 
@@ -57,7 +57,14 @@ class _HomePageState extends State<HomePage> {
     return StreamBuilder<User?>(
         stream: authBloc.currentUser,
         builder: (context, snapshot) {
-          if (!snapshot.hasData) return CircularProgressIndicator();
+          if (!snapshot.hasData)
+            return Center(
+              child: Container(
+                child: CircularProgressIndicator(),
+                width: 100,
+                height: 100,
+              ),
+            );
           return StreamBuilder<UserProvider>(
               stream: userBloc.userProvider,
               builder: (context, userSnapshot) {
@@ -65,18 +72,18 @@ class _HomePageState extends State<HomePage> {
                 return Scaffold(
                   appBar: AppBar(
                     title: Text('Just do it'),
-                   
                   ),
-                  body:
-                      _selectedIndex==0? ToDosLine(
-                        todos: firestore
-                            .getAllToDos('${userSnapshot.data!.userId}')):
-                            _selectedIndex==1?ToDosLine(
-                        todos: firestore
-                            .getNotDoneToDos('${userSnapshot.data!.userId}')):
-                             ToDosLine(
-                        todos: firestore
-                            .getDoneToDos('${userSnapshot.data!.userId}')),
+                  body: _selectedIndex == 0
+                      ? ToDosLine(
+                          todos: firestore
+                              .getAllToDos('${userSnapshot.data!.userId}'))
+                      : _selectedIndex == 1
+                          ? ToDosLine(
+                              todos: firestore.getNotDoneToDos(
+                                  '${userSnapshot.data!.userId}'))
+                          : ToDosLine(
+                              todos: firestore.getDoneToDos(
+                                  '${userSnapshot.data!.userId}')),
                   bottomNavigationBar: BottomNavigationBar(
                     items: [
                       BottomNavigationBarItem(
