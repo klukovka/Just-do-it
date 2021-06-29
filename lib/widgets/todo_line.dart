@@ -16,34 +16,34 @@ class ToDoLine extends StatelessWidget {
     final firestore = FirestoreService();
     final todoPrvider = Provider.of<ToDoProvider>(context);
     return Padding(
-      padding: const EdgeInsets.all(10.0),
+      padding: const EdgeInsets.symmetric(horizontal: 8),
       child: Card(
-        color: todo.todoColor.withOpacity(0.8),
-        elevation: 5,
-        child: ListTile(
-          title: Text('${todo.title}'),
-          subtitle: Text('${todo.description}'),
-          trailing: todo.done == false
-              ? Icon(Icons.check_box_outline_blank)
-              : Icon(Icons.check_box),
-          onTap: () {
-            todoPrvider.loadValues(todo);
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                  builder: (context) => EditAddToDo(
-                        todo: todo,
-                      )),
-            );
-          },
-          onLongPress: () {
-            if (todo.done == false)
-              todo.done = true;
-            else
-              todo.done = false;
-            firestore.saveToDo(todo);
-          },
+          color: todo.todoColor.withOpacity(0.8),
+          elevation: 5,
+          child: ListTile(
+      title: Text('${todo.title}'),
+      subtitle: Text('${todo.description}'),
+      trailing: todo.done == false
+          ? Icon(Icons.check_box_outline_blank)
+          : Icon(Icons.check_box),
+      onTap: () {
+        todoPrvider.loadValues(todo);
+        Navigator.of(context).push(
+          MaterialPageRoute(
+              builder: (context) => EditAddToDo(
+                    todo: todo,
+                  )),
+        );
+      },
+      onLongPress: () {
+        if (todo.done == false)
+          todo.done = true;
+        else
+          todo.done = false;
+        firestore.saveToDo(todo);
+      },
+          ),
         ),
-      ),
     );
   }
 }

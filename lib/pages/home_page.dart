@@ -7,6 +7,7 @@ import 'package:just_do_it/blocs/user_bloc.dart';
 import 'package:just_do_it/models/app_user.dart';
 import 'package:just_do_it/pages/edit_add_todo.dart';
 import 'package:just_do_it/pages/login_page.dart';
+import 'package:just_do_it/pages/recycle_bin.dart';
 import 'package:just_do_it/pages/todos_line.dart';
 import 'package:just_do_it/providers/todo_provider.dart';
 import 'package:just_do_it/providers/user_provider.dart';
@@ -155,8 +156,12 @@ class _HomePageState extends State<HomePage> {
                                 ),
                                 // ignore: deprecated_member_use
                                 RaisedButton(
-                                  onPressed: () {},
-                                  child: Text('Recucle bin'),
+                                  onPressed: () {
+                                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => RecycleBin()),
+                      );
+                                  },
+                                  child: Text('Recycle bin'),
                                 ),
                                 // ignore: deprecated_member_use
                                 RaisedButton(

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:just_do_it/models/todo.dart';
+import 'package:just_do_it/services/firestore_service.dart';
+import 'package:just_do_it/widgets/slidable_todo.dart';
 import 'package:just_do_it/widgets/todo_line.dart';
 
 // ignore: must_be_immutable
 class ToDosLine extends StatelessWidget {
+  final FirestoreService firestoreService = FirestoreService();
   Stream<List<ToDo>> todos;
   ToDosLine({required this.todos});
 
@@ -24,9 +27,13 @@ class ToDosLine extends StatelessWidget {
               child: Text('Error'),
             );
           List<ToDo> list = snapshot.data ?? [];
-          return ListView.builder(
-            itemBuilder: (context, index) => ToDoLine(todo: list[index]),
+          return ListView.separated(
+            itemBuilder: (context, index) => SlidableToDo(todo: list[index],
+            child: ToDoLine(todo: list[index]),),
             itemCount: list.length,
+            separatorBuilder: (BuildContext context, int index) => SizedBox(
+              height: 15,
+            ),
           );
         });
   }
