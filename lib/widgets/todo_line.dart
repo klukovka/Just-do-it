@@ -5,6 +5,7 @@ import 'package:just_do_it/providers/todo_provider.dart';
 import 'package:just_do_it/services/firestore_service.dart';
 import 'package:provider/provider.dart';
 
+// ignore: must_be_immutable
 class ToDoLine extends StatelessWidget {
   ToDo todo;
 

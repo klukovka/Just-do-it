@@ -13,6 +13,7 @@ import 'package:just_do_it/providers/user_provider.dart';
 import 'package:just_do_it/widgets/custom_toast.dart';
 import 'package:provider/provider.dart';
 
+// ignore: must_be_immutable
 class EditAddToDo extends StatefulWidget {
   ToDo? todo;
   EditAddToDo({Key? key, this.todo}) : super(key: key);

@@ -160,8 +160,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     try {
-                      User user =
-                          await authBloc.createUserWithEmail(_email, _password);
+                     await authBloc.createUserWithEmail(_email, _password);
                     } on FirebaseAuthException catch (ex) {
                       print(ex.message);
                       _showToast('${ex.message}');

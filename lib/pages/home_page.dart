@@ -3,8 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:just_do_it/blocs/auth_bloc.dart';
-import 'package:just_do_it/blocs/color_bloc.dart';
-import 'package:just_do_it/blocs/events/color_event.dart';
 import 'package:just_do_it/blocs/user_bloc.dart';
 import 'package:just_do_it/models/app_user.dart';
 import 'package:just_do_it/pages/edit_add_todo.dart';
@@ -29,7 +27,6 @@ class _HomePageState extends State<HomePage> {
     final authBloc = Provider.of<AuthBloc>(context, listen: false);
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final todoProvider = Provider.of<ToDoProvider>(context, listen: false);
-    final firestore = FirestoreService();
 
     todoProvider.nullToDo();
 
