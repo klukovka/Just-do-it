@@ -22,12 +22,14 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late StreamSubscription<User?> loginStreamSubscription;
+  int _selectedIndex = 1;
 
   @override
   void initState() {
     final authBloc = Provider.of<AuthBloc>(context, listen: false);
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final todoProvider = Provider.of<ToDoProvider>(context, listen: false);
+    final firestore = FirestoreService();
 
     todoProvider.nullToDo();
 
@@ -38,7 +40,7 @@ class _HomePageState extends State<HomePage> {
             MaterialPageRoute(builder: (context) => LoginPage()));
       }
     });
-
+  
     super.initState();
   }
 
@@ -59,113 +61,121 @@ class _HomePageState extends State<HomePage> {
         stream: authBloc.currentUser,
         builder: (context, snapshot) {
           if (!snapshot.hasData) return CircularProgressIndicator();
-          return DefaultTabController(
-            length: 3,
-            child: StreamBuilder<UserProvider>(
-                stream: userBloc.userProvider,
-                builder: (context, userSnapshot) {
-                  userBloc.changeUserProvider(userProvider);
-                  return Scaffold(
-                    appBar: AppBar(
-                      title: Text('Just do it'),
-                      bottom: TabBar(
-                        tabs: [
-                          Tab(icon: Icon(Icons.lock_clock), text: 'To do'),
-                          Tab(icon: Icon(Icons.check_box), text: 'Done'),
-                          Tab(icon: Icon(Icons.note_rounded), text: 'All'),
+          return StreamBuilder<UserProvider>(
+              stream: userBloc.userProvider,
+              builder: (context, userSnapshot) {
+                userBloc.changeUserProvider(userProvider);
+                return Scaffold(
+                  appBar: AppBar(
+                    title: Text('Just do it'),
+                   
+                  ),
+                  body:
+                      _selectedIndex==0? ToDosLine(
+                        todos: firestore
+                            .getAllToDos('${userSnapshot.data!.userId}')):
+                            _selectedIndex==1?ToDosLine(
+                        todos: firestore
+                            .getNotDoneToDos('${userSnapshot.data!.userId}')):
+                             ToDosLine(
+                        todos: firestore
+                            .getDoneToDos('${userSnapshot.data!.userId}')),
+                  bottomNavigationBar: BottomNavigationBar(
+                    items: [
+                      BottomNavigationBarItem(
+                          icon: Icon(Icons.note_rounded), label: 'All'),
+                      BottomNavigationBarItem(
+                          icon: Icon(Icons.lock_clock), label: 'To do'),
+                      BottomNavigationBarItem(
+                          icon: Icon(Icons.check_box), label: 'Done'),
+                    ],
+                    currentIndex: _selectedIndex,
+                    selectedItemColor: Colors.deepPurple,
+                    unselectedItemColor: Colors.blueGrey,
+                    onTap: (index) {
+                      setState(() {
+                        _selectedIndex = index;
+                        print(_selectedIndex);
+                      });
+                    },
+                  ),
+                  drawer: Drawer(
+                    child: Container(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            child: Column(
+                              children: [
+                                ListTile(
+                                  title: Text('Name'),
+                                  subtitle: userSnapshot.data!.name == null
+                                      ? Text('Loaging...')
+                                      : Text('${userSnapshot.data!.name}'),
+                                ),
+                                ListTile(
+                                  title: Text('Email'),
+                                  subtitle: snapshot.data!.email == null
+                                      ? Text('Loaging...')
+                                      : Text('${snapshot.data!.email}'),
+                                ),
+                                if (userSnapshot.data!.auth != 'google')
+                                  // ignore: deprecated_member_use
+                                  RaisedButton(
+                                    onPressed: () {},
+                                    child: Text('Change password'),
+                                  ),
+                                // ignore: deprecated_member_use
+                                RaisedButton(
+                                  onPressed: () {},
+                                  child: Text('Change theme'),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            child: Column(
+                              children: [
+                                // ignore: deprecated_member_use
+                                RaisedButton(
+                                  onPressed: () {
+                                    authBloc.logout();
+                                    try {
+                                      authBloc.logoutGoogle();
+                                    } catch (e) {
+                                      print(e);
+                                    }
+                                  },
+                                  child: Text('Log Out'),
+                                ),
+                                // ignore: deprecated_member_use
+                                RaisedButton(
+                                  onPressed: () {},
+                                  child: Text('Recucle bin'),
+                                ),
+                                // ignore: deprecated_member_use
+                                RaisedButton(
+                                  onPressed: () {},
+                                  child: Text('Delete an account'),
+                                ),
+                              ],
+                            ),
+                          )
                         ],
                       ),
                     ),
-                    body: TabBarView(children: [
-                      ToDosLine(
-                          todos: firestore
-                              .getNotDoneToDos('${userSnapshot.data!.userId}')),
-                      ToDosLine(
-                          todos: firestore
-                              .getDoneToDos('${userSnapshot.data!.userId}')),
-                      ToDosLine(
-                          todos: firestore
-                              .getAllToDos('${userSnapshot.data!.userId}')),
-                    ]),
-                    drawer: Drawer(
-                      child: Container(
-                        padding: EdgeInsets.symmetric(vertical: 10),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                              child: Column(
-                                children: [
-                                  ListTile(
-                                    title: Text('Name'),
-                                    subtitle: userSnapshot.data!.name == null
-                                        ? Text('Loaging...')
-                                        : Text('${userSnapshot.data!.name}'),
-                                  ),
-                                  ListTile(
-                                    title: Text('Email'),
-                                    subtitle: snapshot.data!.email == null
-                                        ? Text('Loaging...')
-                                        : Text('${snapshot.data!.email}'),
-                                  ),
-                                  if (userSnapshot.data!.auth != 'google')
-                                    // ignore: deprecated_member_use
-                                    RaisedButton(
-                                      onPressed: () {},
-                                      child: Text('Change password'),
-                                    ),
-                                  // ignore: deprecated_member_use
-                                  RaisedButton(
-                                    onPressed: () {},
-                                    child: Text('Change theme'),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              child: Column(
-                                children: [
-                                  // ignore: deprecated_member_use
-                                  RaisedButton(
-                                    onPressed: () {
-                                      authBloc.logout();
-                                      try {
-                                        authBloc.logoutGoogle();
-                                      } catch (e) {
-                                        print(e);
-                                      }
-                                    },
-                                    child: Text('Log Out'),
-                                  ),
-                                  // ignore: deprecated_member_use
-                                  RaisedButton(
-                                    onPressed: () {},
-                                    child: Text('Recucle bin'),
-                                  ),
-                                  // ignore: deprecated_member_use
-                                  RaisedButton(
-                                    onPressed: () {},
-                                    child: Text('Delete an account'),
-                                  ),
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                    floatingActionButton: FloatingActionButton(
-                      child: Icon(Icons.add),
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                              builder: (context) => EditAddToDo()),
-                        );
-                      },
-                    ),
-                  );
-                }),
-          );
+                  ),
+                  floatingActionButton: FloatingActionButton(
+                    child: Icon(Icons.add),
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => EditAddToDo()),
+                      );
+                    },
+                  ),
+                );
+              });
         });
   }
 }
