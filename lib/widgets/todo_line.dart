@@ -4,6 +4,7 @@ import 'package:just_do_it/pages/edit_add_todo.dart';
 import 'package:just_do_it/providers/todo_provider.dart';
 import 'package:just_do_it/services/firestore_service.dart';
 import 'package:provider/provider.dart';
+import 'package:swipeable_page_route/swipeable_page_route.dart';
 
 // ignore: must_be_immutable
 class ToDoLine extends StatelessWidget {
@@ -29,7 +30,7 @@ class ToDoLine extends StatelessWidget {
       onTap: () {
         todoPrvider.loadValues(todo);
         Navigator.of(context).push(
-          MaterialPageRoute(
+          SwipeablePageRoute(
               builder: (context) => EditAddToDo(
                     todo: todo,
                   )),

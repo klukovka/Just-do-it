@@ -159,8 +159,9 @@ class _HomePageState extends State<HomePage> {
                                 RaisedButton(
                                   onPressed: () {
                                     Navigator.of(context).push(
-                        SwipeablePageRoute(builder: (context) => RecycleBin()),
-                      );
+                                      SwipeablePageRoute(
+                                          builder: (context) => RecycleBin()),
+                                    );
                                   },
                                   child: Text('Recycle bin'),
                                 ),

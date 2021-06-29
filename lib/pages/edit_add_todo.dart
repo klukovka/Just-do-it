@@ -243,6 +243,7 @@ class _EditAddToDoState extends State<EditAddToDo> {
                   todoProvider.title != null &&
                   todoProvider.description != null;
               return FloatingActionButton(
+                backgroundColor: colorSnapshot.color,
                 onPressed: () {
                   if (correct) {
                     if (widget.todo == null) {
@@ -254,11 +255,14 @@ class _EditAddToDoState extends State<EditAddToDo> {
                     _bloc.add(ColorEvent.white);
                     todoProvider.nullToDo();
                     Navigator.of(context).pop();
+
                   } else {
                     _showToast('Input correct data');
                   }
                 },
-                child: Icon(Icons.check),
+                child: Icon(Icons.check, color: colorSnapshot.color == Colors.white
+                  ? Colors.black
+                  : Colors.white,),
               );
             }),
       );
