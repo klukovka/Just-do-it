@@ -31,6 +31,7 @@ class FirestoreService {
         .collection('todos')
         .where('userId', isEqualTo: userId)
         .where('inTrash', isEqualTo: false)
+        .orderBy('dateCreate', descending: true)
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((document) => ToDo.fromFirestore(document.data()))
@@ -43,6 +44,7 @@ class FirestoreService {
         .where('userId', isEqualTo: userId)
         .where('done', isEqualTo: true)
         .where('inTrash', isEqualTo: false)
+        .orderBy('dateCreate', descending: true)
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((document) => ToDo.fromFirestore(document.data()))
@@ -55,6 +57,7 @@ class FirestoreService {
         .where('userId', isEqualTo: userId)
         .where('done', isEqualTo: false)
         .where('inTrash', isEqualTo: false)
+        .orderBy('dateCreate', descending: true)
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((document) => ToDo.fromFirestore(document.data()))
@@ -66,6 +69,7 @@ class FirestoreService {
         .collection('todos')
         .where('userId', isEqualTo: userId)
         .where('inTrash', isEqualTo: true)
+        .orderBy('dateCreate', descending: true)
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((document) => ToDo.fromFirestore(document.data()))
