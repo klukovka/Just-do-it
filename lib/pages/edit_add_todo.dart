@@ -251,18 +251,32 @@ class _EditAddToDoState extends State<EditAddToDo> {
                       todoProvider.changeInTrash(false);
                       todoProvider.changeUserId('${userProvider.userId}');
                     }
-                    todoProvider.saveToDo();
-                    _bloc.add(ColorEvent.white);
-                    todoProvider.nullToDo();
-                    Navigator.of(context).pop();
 
+                    // ignore: deprecated_member_use
+                    Scaffold.of(context).showSnackBar(
+                      SnackBar(
+                        backgroundColor: Colors.green,
+                        duration: Duration(seconds: 2),
+                        content: Text('Todo was saved'),
+                      ),
+                    );
+
+                    Future.delayed(Duration(seconds: 2), () {
+                      todoProvider.saveToDo();
+                      _bloc.add(ColorEvent.white);
+                      todoProvider.nullToDo();
+                      Navigator.of(context).pop();
+                    });
                   } else {
                     _showToast('Input correct data');
                   }
                 },
-                child: Icon(Icons.check, color: colorSnapshot.color == Colors.white
-                  ? Colors.black
-                  : Colors.white,),
+                child: Icon(
+                  Icons.check,
+                  color: colorSnapshot.color == Colors.white
+                      ? Colors.black
+                      : Colors.white,
+                ),
               );
             }),
       );

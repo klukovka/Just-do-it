@@ -19,32 +19,42 @@ class ToDoLine extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),
       child: Card(
-          color: todo.todoColor.withOpacity(0.8),
-          elevation: 5,
-          child: ListTile(
-      title: Text('${todo.title}'),
-      subtitle: Text('${todo.description}'),
-      trailing: todo.done == false
-          ? Icon(Icons.check_box_outline_blank)
-          : Icon(Icons.check_box),
-      onTap: () {
-        todoPrvider.loadValues(todo);
-        Navigator.of(context).push(
-          SwipeablePageRoute(
-              builder: (context) => EditAddToDo(
-                    todo: todo,
-                  )),
-        );
-      },
-      onLongPress: () {
-        if (todo.done == false)
-          todo.done = true;
-        else
-          todo.done = false;
-        firestore.saveToDo(todo);
-      },
-          ),
+        color: todo.todoColor.withOpacity(0.8),
+        elevation: 5,
+        child: ListTile(
+          title: Text('${todo.title}'),
+          subtitle: Text('${todo.description}'),
+          trailing: todo.done == false
+              ? Icon(Icons.check_box_outline_blank)
+              : Icon(Icons.check_box),
+          onTap: () {
+            todoPrvider.loadValues(todo);
+            Navigator.of(context).push(
+              SwipeablePageRoute(
+                  builder: (context) => EditAddToDo(
+                        todo: todo,
+                      )),
+            );
+          },
+          onLongPress: () {
+            if (todo.done == false)
+              todo.done = true;
+            else
+              todo.done = false;
+            // ignore: deprecated_member_use
+            Scaffold.of(context).showSnackBar(
+              SnackBar(
+                backgroundColor:
+                    todo.done == true ? Colors.green : Colors.blueAccent[700],
+                duration: Duration(seconds: 2),
+                content: Text(
+                    todo.done == true ? 'Todo is done' : 'Todo is not done'),
+              ),
+            );
+            firestore.saveToDo(todo);
+          },
         ),
+      ),
     );
   }
 }

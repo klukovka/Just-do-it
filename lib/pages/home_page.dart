@@ -48,6 +48,7 @@ class _HomePageState extends State<HomePage> {
     loginStreamSubscription.cancel();
     super.dispose();
   }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -159,7 +160,7 @@ class _HomePageState extends State<HomePage> {
                                 RaisedButton(
                                   onPressed: () {
                                     Navigator.of(context).push(
-                                      SwipeablePageRoute(
+                                      MaterialPageRoute(
                                           builder: (context) => RecycleBin()),
                                     );
                                   },

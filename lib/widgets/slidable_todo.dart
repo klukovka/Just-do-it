@@ -9,7 +9,7 @@ class SlidableToDo extends StatelessWidget {
   const SlidableToDo({Key? key, required this.child, required this.todo})
       : super(key: key);
 
-  List<Widget> get slidableActions {
+  List<Widget> slidableActions(BuildContext context) {
     FirestoreService firestoreService = FirestoreService();
     if (todo.inTrash == false)
       return [
@@ -19,6 +19,14 @@ class SlidableToDo extends StatelessWidget {
           icon: Icons.delete,
           onTap: () {
             todo.inTrash = true;
+            // ignore: deprecated_member_use
+            Scaffold.of(context).showSnackBar(
+              SnackBar(
+                backgroundColor: Colors.red[700],
+                duration: Duration(seconds: 2),
+                content: Text('Todo moved to recycle bin'),
+              ),
+            );
             firestoreService.saveToDo(todo);
           },
         )
@@ -30,6 +38,14 @@ class SlidableToDo extends StatelessWidget {
         icon: Icons.restore,
         onTap: () {
           todo.inTrash = false;
+          // ignore: deprecated_member_use
+          Scaffold.of(context).showSnackBar(
+            SnackBar(
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 2),
+              content: Text('Todo was restored'),
+            ),
+          );
           firestoreService.saveToDo(todo);
         },
       ),
@@ -38,6 +54,14 @@ class SlidableToDo extends StatelessWidget {
         color: Colors.red,
         icon: Icons.delete,
         onTap: () {
+          // ignore: deprecated_member_use
+          Scaffold.of(context).showSnackBar(
+            SnackBar(
+              backgroundColor: Colors.redAccent[700],
+              duration: Duration(seconds: 2),
+              content: Text('Todo was deleted'),
+            ),
+          );
           firestoreService.removeToDo('${todo.toDoId}');
         },
       )
@@ -49,6 +73,6 @@ class SlidableToDo extends StatelessWidget {
     return Slidable(
         child: child,
         actionPane: SlidableDrawerActionPane(),
-        secondaryActions: slidableActions);
+        secondaryActions: slidableActions(context));
   }
 }
