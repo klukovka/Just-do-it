@@ -251,6 +251,7 @@ class _EditAddToDoState extends State<EditAddToDo> {
                       todoProvider.changeInTrash(false);
                       todoProvider.changeUserId('${userProvider.userId}');
                     }
+                    todoProvider.saveToDo();
 
                     // ignore: deprecated_member_use
                     Scaffold.of(context).showSnackBar(
@@ -262,7 +263,6 @@ class _EditAddToDoState extends State<EditAddToDo> {
                     );
 
                     Future.delayed(Duration(seconds: 2), () {
-                      todoProvider.saveToDo();
                       _bloc.add(ColorEvent.white);
                       todoProvider.nullToDo();
                       Navigator.of(context).pop();

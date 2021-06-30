@@ -8,6 +8,7 @@ class ToDo {
   bool? inTrash;
   String? userId;
   String? color;
+  DateTime? dateCreate;
 
   ToDo({
     this.description,
@@ -17,6 +18,7 @@ class ToDo {
     this.toDoId,
     this.userId,
     this.color,
+    this.dateCreate,
   });
 
   Map<String, dynamic> get toMap => {
@@ -27,6 +29,7 @@ class ToDo {
         'inTrash': inTrash,
         'userId': userId,
         'color': color,
+        'dateCreate':dateCreate,
       };
 
   ToDo.fromFirestore(Map<String, dynamic> firestore)
@@ -36,6 +39,7 @@ class ToDo {
         done = firestore['done'],
         inTrash = firestore['inTrash'],
         color = firestore['color'],
+        dateCreate=DateTime.parse(firestore['dateCreate'].toDate().toString()),
         userId = firestore['userId'];
 
   Color get todoColor {

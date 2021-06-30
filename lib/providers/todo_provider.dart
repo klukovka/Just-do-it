@@ -23,6 +23,7 @@ class ToDoProvider with ChangeNotifier {
   bool? get inTrash => _inTrash;
   String? get userId => _userId;
   String? get color => _color;
+  DateTime? get dateCreate => dateCreate;
 
   //setters
   changeTitle(String value) {
@@ -112,6 +113,7 @@ class ToDoProvider with ChangeNotifier {
       title: title,
       toDoId: toDoId ?? uuid.v4(),
       userId: userId,
+      dateCreate: DateTime.now(),
     );
 
     firestoreService.saveToDo(todo);
