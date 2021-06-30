@@ -1,11 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:just_do_it/models/app_user.dart';
 import 'package:just_do_it/services/auth_api.dart';
+import 'package:just_do_it/services/firestore_service.dart';
 
 class AuthBloc {
   final authService = AuthService();
   final googleSignin = GoogleSignIn(scopes: ['email']);
+  final FirestoreService firestore = FirestoreService();
 
   Stream<User?> get currentUser => authService.currentUser;
 
@@ -52,7 +55,11 @@ class AuthBloc {
       );
       //fire base sign in
 
-      await authService.signInWithCredential(credential);
+      await authService.signInWithCredential(credential).then((value) =>
+          firestore.saveUser(AppUser(
+              userId: value.user!.uid,
+              name: value.user!.displayName,
+              auth: 'google')));
     } on PlatformException catch (e) {
       throw PlatformException(code: e.code, message: e.message);
     } on FirebaseAuthException catch (e) {

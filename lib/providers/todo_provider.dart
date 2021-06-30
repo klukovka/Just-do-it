@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
 import 'package:just_do_it/blocs/events/color_event.dart';
 import 'package:just_do_it/models/todo.dart';
@@ -113,7 +114,7 @@ class ToDoProvider with ChangeNotifier {
       title: title,
       toDoId: toDoId ?? uuid.v4(),
       userId: userId,
-      dateCreate: DateTime.now(),
+      dateCreate: Timestamp.now(),
     );
 
     firestoreService.saveToDo(todo);

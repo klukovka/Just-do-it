@@ -1,20 +1,20 @@
 {
   "project_info": {
-    "project_number": "189480521173",
-    "project_id": "just-do-it-cbd6d",
-    "storage_bucket": "just-do-it-cbd6d.appspot.com"
+    "project_number": "1018501816478",
+    "project_id": "just-do-it-6c3b3",
+    "storage_bucket": "just-do-it-6c3b3.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:189480521173:android:34e71b9712c2d64946815c",
+        "mobilesdk_app_id": "1:1018501816478:android:32334546b10f86684c9b8f",
         "android_client_info": {
           "package_name": "com.klukovka.just_do_it"
         }
       },
       "oauth_client": [
         {
-          "client_id": "189480521173-qif8au11hklhsum7lf52ihptptspmb72.apps.googleusercontent.com",
+          "client_id": "1018501816478-rv7cp13val1nphpfssrcm0m7t4ujh5ql.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.klukovka.just_do_it",
@@ -22,20 +22,20 @@
           }
         },
         {
-          "client_id": "189480521173-er1uk79vl0nfh46k6l1u1ib8tev4ra03.apps.googleusercontent.com",
+          "client_id": "1018501816478-4hnhccmgctrp029eaih7etmdh7p8di58.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAo-lUPy4A5GF7pm9R7YGjPz1LzS4RdpwI"
+          "current_key": "AIzaSyD1ALTkSFgZDAthBlxVr0J8tbbk-i5zFHg"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "189480521173-er1uk79vl0nfh46k6l1u1ib8tev4ra03.apps.googleusercontent.com",
+              "client_id": "1018501816478-4hnhccmgctrp029eaih7etmdh7p8di58.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class ToDo {
@@ -8,7 +9,7 @@ class ToDo {
   bool? inTrash;
   String? userId;
   String? color;
-  DateTime? dateCreate;
+  Timestamp? dateCreate;
 
   ToDo({
     this.description,
@@ -39,7 +40,7 @@ class ToDo {
         done = firestore['done'],
         inTrash = firestore['inTrash'],
         color = firestore['color'],
-        dateCreate=DateTime.parse(firestore['dateCreate'].toDate().toString()),
+        dateCreate=firestore['dateCreate'],
         userId = firestore['userId'];
 
   Color get todoColor {
