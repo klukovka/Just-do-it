@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:just_do_it/blocs/auth_bloc.dart';
 import 'package:just_do_it/blocs/color_bloc.dart';
 import 'package:just_do_it/blocs/states/color_state.dart';
+import 'package:just_do_it/blocs/states/todo_event_state.dart';
+import 'package:just_do_it/blocs/todo_view_bloc.dart';
 import 'package:just_do_it/blocs/user_bloc.dart';
 import 'package:just_do_it/blocs/validation_todo_bloc.dart';
 import 'package:just_do_it/pages/login_page.dart';
@@ -45,6 +47,9 @@ class App extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => ColorBloc(ColorState.fromColor('white')),
+        ),
+            BlocProvider(
+          create: (context) => ToDoViewBloc(ToDoEventStateList()),
         ),
          
       ],

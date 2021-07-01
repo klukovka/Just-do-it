@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:just_do_it/blocs/auth_bloc.dart';
+import 'package:just_do_it/blocs/states/todo_event_state.dart';
+import 'package:just_do_it/blocs/todo_view_bloc.dart';
 import 'package:just_do_it/blocs/user_bloc.dart';
 import 'package:just_do_it/models/app_user.dart';
 import 'package:just_do_it/pages/edit_add_todo.dart';
@@ -48,13 +50,13 @@ class _HomePageState extends State<HomePage> {
     loginStreamSubscription.cancel();
     super.dispose();
   }
-  
 
   @override
   Widget build(BuildContext context) {
     final authBloc = context.read<AuthBloc>();
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final userBloc = context.read<UserBloc>();
+    final toDoViewBloc = BlocProvider.of<ToDoViewBloc>(context);
     final firestore = FirestoreService();
 
     return StreamBuilder<User?>(
@@ -72,121 +74,138 @@ class _HomePageState extends State<HomePage> {
               stream: userBloc.userProvider,
               builder: (context, userSnapshot) {
                 userBloc.changeUserProvider(userProvider);
-                return Scaffold(
-                  appBar: AppBar(
-                    title: Text('Just do it'),
-                  ),
-                  body: _selectedIndex == 0
-                      ? ToDosLine(
-                          todos: firestore
-                              .getAllToDos('${userSnapshot.data!.userId}'))
-                      : _selectedIndex == 1
-                          ? ToDosLine(
-                              todos: firestore.getNotDoneToDos(
-                                  '${userSnapshot.data!.userId}'))
-                          : ToDosLine(
-                              todos: firestore.getDoneToDos(
-                                  '${userSnapshot.data!.userId}')),
-                  bottomNavigationBar: BottomNavigationBar(
-                    items: [
-                      BottomNavigationBarItem(
-                          icon: Icon(Icons.note_rounded), label: 'All'),
-                      BottomNavigationBarItem(
-                          icon: Icon(Icons.lock_clock), label: 'To do'),
-                      BottomNavigationBarItem(
-                          icon: Icon(Icons.check_box), label: 'Done'),
-                    ],
-                    currentIndex: _selectedIndex,
-                    selectedItemColor: Colors.deepPurple,
-                    unselectedItemColor: Colors.blueGrey,
-                    onTap: (index) {
-                      setState(() {
-                        _selectedIndex = index;
-                        print(_selectedIndex);
-                      });
-                    },
-                  ),
-                  drawer: Drawer(
-                    child: Container(
-                      padding: EdgeInsets.symmetric(vertical: 10),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Container(
-                            child: Column(
-                              children: [
-                                ListTile(
-                                  title: Text('Name'),
-                                  subtitle: userSnapshot.data!.name == null
-                                      ? Text('Loaging...')
-                                      : Text('${userSnapshot.data!.name}'),
-                                ),
-                                ListTile(
-                                  title: Text('Email'),
-                                  subtitle: snapshot.data!.email == null
-                                      ? Text('Loaging...')
-                                      : Text('${snapshot.data!.email}'),
-                                ),
-                                if (userSnapshot.data!.auth != 'google')
+                return BlocBuilder<ToDoViewBloc, ToDoEventState>(
+                    builder: (context, snapshotToDoEventState) {
+                  return Scaffold(
+                    appBar: AppBar(
+                      title: Text('Just do it'),
+                      actions: [
+                        ButtonBar(
+                          children: [
+                            IconButton(
+                                onPressed: () {
+                                  if (snapshotToDoEventState
+                                      is ToDoEventStateList)
+                                    toDoViewBloc.add(ToDoViewEvent.grid_event);
+                                  else
+                                    toDoViewBloc.add(ToDoViewEvent.list_event);
+                                },
+                                icon: snapshotToDoEventState.stateIcon)
+                          ],
+                        )
+                      ],
+                    ),                 
+                    body: _selectedIndex == 0
+                        ? snapshotToDoEventState.getToDos(firestore
+                            .getAllToDos('${userSnapshot.data!.userId}'))
+                        : _selectedIndex == 1
+                            ? snapshotToDoEventState.getToDos(
+                                firestore.getNotDoneToDos(
+                                    '${userSnapshot.data!.userId}'))
+                            : snapshotToDoEventState.getToDos(firestore
+                                .getDoneToDos('${userSnapshot.data!.userId}')),
+                    bottomNavigationBar: BottomNavigationBar(
+                      items: [
+                        BottomNavigationBarItem(
+                            icon: Icon(Icons.note_rounded), label: 'All'),
+                        BottomNavigationBarItem(
+                            icon: Icon(Icons.lock_clock), label: 'To do'),
+                        BottomNavigationBarItem(
+                            icon: Icon(Icons.check_box), label: 'Done'),
+                      ],
+                      currentIndex: _selectedIndex,
+                      selectedItemColor: Colors.deepPurple,
+                      unselectedItemColor: Colors.blueGrey,
+                      onTap: (index) {
+                        setState(() {
+                          _selectedIndex = index;
+                          print(_selectedIndex);
+                        });
+                      },
+                    ),
+                    drawer: Drawer(
+                      child: Container(
+                        padding: EdgeInsets.symmetric(vertical: 10),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              child: Column(
+                                children: [
+                                  ListTile(
+                                    title: Text('Name'),
+                                    subtitle: userSnapshot.data!.name == null
+                                        ? Text('Loaging...')
+                                        : Text('${userSnapshot.data!.name}'),
+                                  ),
+                                  ListTile(
+                                    title: Text('Email'),
+                                    subtitle: snapshot.data!.email == null
+                                        ? Text('Loaging...')
+                                        : Text('${snapshot.data!.email}'),
+                                  ),
+                                  if (userSnapshot.data!.auth != 'google')
+                                    // ignore: deprecated_member_use
+                                    RaisedButton(
+                                      onPressed: () {},
+                                      child: Text('Change password'),
+                                    ),
                                   // ignore: deprecated_member_use
                                   RaisedButton(
                                     onPressed: () {},
-                                    child: Text('Change password'),
+                                    child: Text('Change theme'),
                                   ),
-                                // ignore: deprecated_member_use
-                                RaisedButton(
-                                  onPressed: () {},
-                                  child: Text('Change theme'),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                          Container(
-                            child: Column(
-                              children: [
-                                // ignore: deprecated_member_use
-                                RaisedButton(
-                                  onPressed: () {
-                                    authBloc.logout();
-                                    try {
-                                      authBloc.logoutGoogle();
-                                    } catch (e) {
-                                      print(e);
-                                    }
-                                  },
-                                  child: Text('Log Out'),
-                                ),
-                                // ignore: deprecated_member_use
-                                RaisedButton(
-                                  onPressed: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                          builder: (context) => RecycleBin()),
-                                    );
-                                  },
-                                  child: Text('Recycle bin'),
-                                ),
-                                // ignore: deprecated_member_use
-                                RaisedButton(
-                                  onPressed: () {},
-                                  child: Text('Delete an account'),
-                                ),
-                              ],
-                            ),
-                          )
-                        ],
+                            Container(
+                              child: Column(
+                                children: [
+                                  // ignore: deprecated_member_use
+                                  RaisedButton(
+                                    onPressed: () {
+                                      authBloc.logout();
+                                      try {
+                                        authBloc.logoutGoogle();
+                                      } catch (e) {
+                                        print(e);
+                                      }
+                                    },
+                                    child: Text('Log Out'),
+                                  ),
+                                  // ignore: deprecated_member_use
+                                  RaisedButton(
+                                    onPressed: () {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (context) => RecycleBin()),
+                                      );
+                                    },
+                                    child: Text('Recycle bin'),
+                                  ),
+                                  // ignore: deprecated_member_use
+                                  RaisedButton(
+                                    onPressed: () {},
+                                    child: Text('Delete an account'),
+                                  ),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  floatingActionButton: FloatingActionButton(
-                    child: Icon(Icons.add),
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        SwipeablePageRoute(builder: (context) => EditAddToDo()),
-                      );
-                    },
-                  ),
-                );
+                    floatingActionButton: FloatingActionButton(
+                      child: Icon(Icons.add),
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          SwipeablePageRoute(
+                              builder: (context) => EditAddToDo()),
+                        );
+                      },
+                    ),
+                  );
+                });
               });
         });
   }
