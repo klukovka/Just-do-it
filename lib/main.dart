@@ -15,6 +15,8 @@ import 'package:provider/provider.dart';
 
 import 'blocs/validation_bloc.dart';
 
+//flutter run --no-sound-null-safety
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
