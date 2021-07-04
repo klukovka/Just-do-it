@@ -205,7 +205,42 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                   // ignore: deprecated_member_use
                                   RaisedButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return AlertDialog(
+                                              title: Text('Attention!'),
+                                              content: Text(
+                                                  'Do you really want to delete your account?'),
+                                              actions: [
+                                                TextButton(
+                                                    onPressed: () {
+                                                      // ignore: deprecated_member_use
+                                                      firestore
+                                                          .removeAllToDos(
+                                                              '${userSnapshot.data!.userId}')
+                                                          .then((value) => firestore
+                                                              .removeUser(
+                                                                  '${userSnapshot.data!.userId}')
+                                                              .then((value) =>
+                                                                  authBloc
+                                                                      .deleteUser()));
+
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                    child: Text('Yes')),
+                                                TextButton(
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                    child: Text('No'))
+                                              ],
+                                            );
+                                          });
+                                    },
                                     child: Text('Delete an account'),
                                   ),
                                 ],

@@ -45,12 +45,23 @@ class AuthBloc {
   }
 
   resetPassword(String _email) async {
-    try{
-    await authService.auth.sendPasswordResetEmail(email: _email);
+    try {
+      await authService.auth.sendPasswordResetEmail(email: _email);
     } on FirebaseAuthException catch (e) {
       throw FirebaseAuthException(code: e.code, message: e.message);
     } catch (e) {
       throw Exception(_cutExceptionMessage(e));
+    }
+  }
+
+  deleteUser() async {
+    try {
+      FirebaseAuth.instance.currentUser!.delete();
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'requires-recent-login') {
+        print(
+            'The user must reauthenticate before this operation can be executed.');
+      }
     }
   }
 
