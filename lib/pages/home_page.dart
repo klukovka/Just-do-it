@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:just_do_it/blocs/auth_bloc.dart';
 import 'package:just_do_it/blocs/states/todo_event_state.dart';
 import 'package:just_do_it/blocs/todo_view_bloc.dart';
@@ -13,6 +14,7 @@ import 'package:just_do_it/pages/recycle_bin.dart';
 import 'package:just_do_it/providers/todo_provider.dart';
 import 'package:just_do_it/providers/user_provider.dart';
 import 'package:just_do_it/services/firestore_service.dart';
+import 'package:just_do_it/widgets/custom_toast.dart';
 import 'package:provider/provider.dart';
 import 'package:swipeable_page_route/swipeable_page_route.dart';
 
@@ -23,10 +25,12 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late StreamSubscription<User?> loginStreamSubscription;
+  FToast fToast = FToast();
   int _selectedIndex = 1;
 
   @override
   void initState() {
+    fToast.init(context);
     final authBloc = Provider.of<AuthBloc>(context, listen: false);
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final todoProvider = Provider.of<ToDoProvider>(context, listen: false);
@@ -48,6 +52,14 @@ class _HomePageState extends State<HomePage> {
   void dispose() {
     loginStreamSubscription.cancel();
     super.dispose();
+  }
+
+  void _showToast(CustomToast toast) {
+    fToast.showToast(
+      child: toast,
+      gravity: ToastGravity.BOTTOM,
+      toastDuration: Duration(seconds: 2),
+    );
   }
 
   @override
@@ -93,7 +105,7 @@ class _HomePageState extends State<HomePage> {
                           ],
                         )
                       ],
-                    ),                 
+                    ),
                     body: _selectedIndex == 0
                         ? snapshotToDoEventState.getToDos(firestore
                             .getAllToDos('${userSnapshot.data!.userId}'))
@@ -102,7 +114,7 @@ class _HomePageState extends State<HomePage> {
                                 firestore.getNotDoneToDos(
                                     '${userSnapshot.data!.userId}'))
                             : snapshotToDoEventState.getToDos(firestore
-                                .getDoneToDos('${userSnapshot.data!.userId}')), 
+                                .getDoneToDos('${userSnapshot.data!.userId}')),
                     bottomNavigationBar: BottomNavigationBar(
                       items: [
                         BottomNavigationBarItem(
@@ -146,7 +158,16 @@ class _HomePageState extends State<HomePage> {
                                   if (userSnapshot.data!.auth != 'google')
                                     // ignore: deprecated_member_use
                                     RaisedButton(
-                                      onPressed: () {},
+                                      onPressed: () async {
+                                        await authBloc.resetPassword(
+                                            '${snapshot.data!.email}');
+                                        _showToast(CustomToast(
+                                          toastText:
+                                              'Request was sent to your email',
+                                          toastColor: Colors.green,
+                                          iconData: Icons.check,
+                                        ));
+                                      },
                                       child: Text('Change password'),
                                     ),
                                   // ignore: deprecated_member_use

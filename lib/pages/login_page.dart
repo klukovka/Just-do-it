@@ -8,9 +8,11 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:just_do_it/blocs/auth_bloc.dart';
 import 'package:just_do_it/pages/home_page.dart';
 import 'package:just_do_it/pages/reg_page.dart';
+import 'package:just_do_it/pages/reset_password.dart';
 import 'package:just_do_it/providers/user_provider.dart';
 import 'package:just_do_it/widgets/custom_toast.dart';
 import 'package:provider/provider.dart';
+import 'package:swipeable_page_route/swipeable_page_route.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -118,7 +120,12 @@ class _LoginPageState extends State<LoginPage> {
             child: Text('Create an account')),
         // ignore: deprecated_member_use
               FlatButton(
-            onPressed: () {},
+            onPressed: () {
+               Navigator.of(context).push(
+              SwipeablePageRoute(
+                  builder: (context) => ResetPassword()),
+            );
+            },
             child: Text('Forgot password')),
       ],
     ));

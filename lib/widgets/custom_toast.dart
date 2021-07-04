@@ -2,7 +2,14 @@ import 'package:flutter/material.dart';
 
 class CustomToast extends StatelessWidget {
   final String toastText;
-  const CustomToast({Key? key, required this.toastText}) : super(key: key);
+  final Color toastColor;
+  final IconData iconData;
+  const CustomToast({
+    Key? key,
+    required this.toastText,
+    this.toastColor = Colors.yellowAccent,
+    this.iconData = Icons.warning,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -10,12 +17,12 @@ class CustomToast extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(25.0),
-        color: Colors.yellowAccent,
+        color: toastColor,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.warning),
+          Icon(iconData),
           SizedBox(
             width: 12.0,
           ),

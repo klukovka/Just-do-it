@@ -44,6 +44,16 @@ class AuthBloc {
     return user;
   }
 
+  resetPassword(String _email) async {
+    try{
+    await authService.auth.sendPasswordResetEmail(email: _email);
+    } on FirebaseAuthException catch (e) {
+      throw FirebaseAuthException(code: e.code, message: e.message);
+    } catch (e) {
+      throw Exception(_cutExceptionMessage(e));
+    }
+  }
+
   loginGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await googleSignin.signIn();
