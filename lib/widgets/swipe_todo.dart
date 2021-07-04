@@ -17,36 +17,37 @@ class SwipeToDo extends StatelessWidget {
     return SwipeTo(
       child: child,
       onLeftSwipe: () {
-         showDialog(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    title: Text('Attention!'),
-                    content: Text('Do you want to move todo to recycle bin?'),
-                    actions: [
-                      TextButton(
-                          onPressed: () {
-                            todo.inTrash = true;
-                            // ignore: deprecated_member_use
-                       /*     Scaffold.of(context).showSnackBar(
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: Text('Attention!'),
+                content: Text('Do you want to move todo to recycle bin?'),
+                actions: [
+                  TextButton(
+                      onPressed: () {
+                        todo.inTrash = true;
+                        // ignore: deprecated_member_use
+                        /*     Scaffold.of(context).showSnackBar(
                               SnackBar(
                                 backgroundColor: Colors.red[700],
                                 duration: Duration(seconds: 2),
                                 content: Text('Todo moved to recycle bin'),
                               ),
                             ); */
-                            firestoreService.saveToDo(todo);
-                            Navigator.of(context).pop();
-                          },
-                          child: Text('Yes')),
-                      TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: Text('No'))
-                    ],
-                  );
-                });
+                        firestoreService.saveToDo(todo);
+
+                        Navigator.of(context).pop();
+                      },
+                      child: Text('Yes')),
+                  TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text('No'))
+                ],
+              );
+            });
       },
       iconOnLeftSwipe: Icons.delete,
       iconColor: Colors.red,

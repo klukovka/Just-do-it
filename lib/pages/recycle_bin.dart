@@ -53,6 +53,42 @@ class RecycleBin extends StatelessWidget {
               body: snapshotToDoEventState.getToDos(
                 firestoreService.getToDosInTrash('${snapshot.data!.userId}'),
               ),
+              floatingActionButton: FloatingActionButton(
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text('Attention!'),
+                          content: Text('Do you want to delete all todos?'),
+                          actions: [
+                            TextButton(
+                                onPressed: () {
+                                  // ignore: deprecated_member_use
+                                  /*     Scaffold.of(context).showSnackBar(
+                              SnackBar(
+                                backgroundColor: Colors.red[700],
+                                duration: Duration(seconds: 2),
+                                content: Text('Todo moved to recycle bin'),
+                              ),
+                            ); */
+                                  firestoreService
+                                      .removeAllToDos('${userProvider.userId}');
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('Yes')),
+                            TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('No'))
+                          ],
+                        );
+                      });
+                },
+                child: Icon(Icons.delete_forever),
+                backgroundColor: Colors.redAccent[700],
+              ),
             );
           });
         });

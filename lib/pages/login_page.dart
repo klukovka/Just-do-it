@@ -116,6 +116,10 @@ class _LoginPageState extends State<LoginPage> {
             onPressed: () => Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (context) => RegisterPage())),
             child: Text('Create an account')),
+        // ignore: deprecated_member_use
+              FlatButton(
+            onPressed: () {},
+            child: Text('Forgot password')),
       ],
     ));
   }

@@ -102,7 +102,7 @@ class _HomePageState extends State<HomePage> {
                                 firestore.getNotDoneToDos(
                                     '${userSnapshot.data!.userId}'))
                             : snapshotToDoEventState.getToDos(firestore
-                                .getDoneToDos('${userSnapshot.data!.userId}')),
+                                .getDoneToDos('${userSnapshot.data!.userId}')), 
                     bottomNavigationBar: BottomNavigationBar(
                       items: [
                         BottomNavigationBarItem(

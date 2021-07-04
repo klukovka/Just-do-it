@@ -31,7 +31,7 @@ class FirestoreService {
         .collection('todos')
         .where('userId', isEqualTo: userId)
         .where('inTrash', isEqualTo: false)
-       // .orderBy('dateCreate')
+        // .orderBy('dateCreate')
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((document) => ToDo.fromFirestore(document.data()))
@@ -44,7 +44,7 @@ class FirestoreService {
         .where('userId', isEqualTo: userId)
         .where('done', isEqualTo: true)
         .where('inTrash', isEqualTo: false)
-      //  .orderBy('dateCreate')
+        //  .orderBy('dateCreate')
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((document) => ToDo.fromFirestore(document.data()))
@@ -57,7 +57,7 @@ class FirestoreService {
         .where('userId', isEqualTo: userId)
         .where('done', isEqualTo: false)
         .where('inTrash', isEqualTo: false)
-       // .orderBy('dateCreate')
+        // .orderBy('dateCreate')
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((document) => ToDo.fromFirestore(document.data()))
@@ -74,5 +74,16 @@ class FirestoreService {
         .map((snapshot) => snapshot.docs
             .map((document) => ToDo.fromFirestore(document.data()))
             .toList());
+  }
+
+  Future<void> removeAllToDos(String userId) {
+    return _db
+        .collection('todos')
+        .where('userId', isEqualTo: userId)
+        .where('inTrash', isEqualTo: true)
+        .get()
+        .then((snapshot) => snapshot.docs.forEach((element) {
+              removeToDo('${ToDo.fromFirestore(element.data()).toDoId}');
+            }));
   }
 }
