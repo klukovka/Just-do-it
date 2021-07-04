@@ -216,7 +216,7 @@ class _HomePageState extends State<HomePage> {
                                               actions: [
                                                 TextButton(
                                                     onPressed: () {
-                                                      // ignore: deprecated_member_use
+                                                      authBloc.logoutGoogle();
                                                       firestore
                                                           .removeAllToDos(
                                                               '${userSnapshot.data!.userId}')

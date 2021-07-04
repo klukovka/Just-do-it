@@ -56,7 +56,7 @@ class AuthBloc {
 
   deleteUser() async {
     try {
-      FirebaseAuth.instance.currentUser!.delete();
+      await FirebaseAuth.instance.currentUser!.delete();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'requires-recent-login') {
         print(
