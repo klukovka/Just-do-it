@@ -21,7 +21,15 @@ class ToDosLine extends StatelessWidget {
             return Center(
               child: Text('Error'),
             );
+
+             if (snapshot.data!.length==0)
+            return Center(
+              child: Text('Empty'),
+            ); 
+
           List<ToDo> list = snapshot.data ?? [];
+        //  print('Snapshot => ${snapshot.data!.length}; List => ${list.length}');
+
           return ListView.separated(
             itemBuilder: (context, index) => SlidableToDo(
               todo: list[index],

@@ -79,6 +79,7 @@ class _HomePageState extends State<HomePage> {
               stream: userBloc.userProvider,
               builder: (context, userSnapshot) {
                 userBloc.changeUserProvider(userProvider);
+                if (!userSnapshot.hasData) return CustomProgressBar();
                 return BlocBuilder<ToDoViewBloc, ToDoEventState>(
                     builder: (context, snapshotToDoEventState) {
                   return Scaffold(
