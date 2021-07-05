@@ -5,6 +5,7 @@ import 'package:just_do_it/blocs/todo_view_bloc.dart';
 import 'package:just_do_it/blocs/user_bloc.dart';
 import 'package:just_do_it/providers/user_provider.dart';
 import 'package:just_do_it/services/firestore_service.dart';
+import 'package:just_do_it/widgets/custom_progress_bar.dart';
 import 'package:provider/provider.dart';
 
 class RecycleBin extends StatelessWidget {
@@ -21,14 +22,7 @@ class RecycleBin extends StatelessWidget {
         stream: userBloc.userProvider,
         builder: (context, snapshot) {
           userBloc.changeUserProvider(userProvider);
-          if (!snapshot.hasData)
-            return Center(
-              child: Container(
-                child: CircularProgressIndicator(),
-                width: 100,
-                height: 100,
-              ),
-            );
+          if (!snapshot.hasData) return CustomProgressBar();
 
           return BlocBuilder<ToDoViewBloc, ToDoEventState>(
               builder: (context, snapshotToDoEventState) {

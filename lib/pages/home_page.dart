@@ -14,6 +14,7 @@ import 'package:just_do_it/pages/recycle_bin.dart';
 import 'package:just_do_it/providers/todo_provider.dart';
 import 'package:just_do_it/providers/user_provider.dart';
 import 'package:just_do_it/services/firestore_service.dart';
+import 'package:just_do_it/widgets/custom_progress_bar.dart';
 import 'package:just_do_it/widgets/custom_toast.dart';
 import 'package:provider/provider.dart';
 import 'package:swipeable_page_route/swipeable_page_route.dart';
@@ -73,14 +74,7 @@ class _HomePageState extends State<HomePage> {
     return StreamBuilder<User?>(
         stream: authBloc.currentUser,
         builder: (context, snapshot) {
-          if (!snapshot.hasData)
-            return Center(
-              child: Container(
-                child: CircularProgressIndicator(),
-                width: 100,
-                height: 100,
-              ),
-            );
+          if (!snapshot.hasData) return CustomProgressBar();
           return StreamBuilder<UserProvider>(
               stream: userBloc.userProvider,
               builder: (context, userSnapshot) {
@@ -106,15 +100,18 @@ class _HomePageState extends State<HomePage> {
                         )
                       ],
                     ),
-                    body: _selectedIndex == 0
-                        ? snapshotToDoEventState.getToDos(firestore
-                            .getAllToDos('${userSnapshot.data!.userId}'))
-                        : _selectedIndex == 1
-                            ? snapshotToDoEventState.getToDos(
-                                firestore.getNotDoneToDos(
-                                    '${userSnapshot.data!.userId}'))
-                            : snapshotToDoEventState.getToDos(firestore
-                                .getDoneToDos('${userSnapshot.data!.userId}')),
+                    body: userSnapshot.data!.userId != null
+                        ? _selectedIndex == 0
+                            ? snapshotToDoEventState.getToDos(firestore
+                                .getAllToDos('${userSnapshot.data!.userId}'))
+                            : _selectedIndex == 1
+                                ? snapshotToDoEventState.getToDos(
+                                    firestore.getNotDoneToDos(
+                                        '${userSnapshot.data!.userId}'))
+                                : snapshotToDoEventState.getToDos(
+                                    firestore.getDoneToDos(
+                                        '${userSnapshot.data!.userId}'))
+                        : CustomProgressBar(),
                     bottomNavigationBar: BottomNavigationBar(
                       items: [
                         BottomNavigationBarItem(
