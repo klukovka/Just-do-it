@@ -5,10 +5,13 @@ import 'package:just_do_it/blocs/auth_bloc.dart';
 import 'package:just_do_it/blocs/color_bloc.dart';
 import 'package:just_do_it/blocs/states/color_state.dart';
 import 'package:just_do_it/blocs/states/todo_event_state.dart';
+import 'package:just_do_it/blocs/states/todo_search_state.dart';
+import 'package:just_do_it/blocs/todo_search_bloc.dart';
 import 'package:just_do_it/blocs/todo_view_bloc.dart';
 import 'package:just_do_it/blocs/user_bloc.dart';
 import 'package:just_do_it/blocs/validation_todo_bloc.dart';
 import 'package:just_do_it/pages/login_page.dart';
+import 'package:just_do_it/providers/search_provider.dart';
 import 'package:just_do_it/providers/todo_provider.dart';
 import 'package:just_do_it/providers/user_provider.dart';
 import 'package:provider/provider.dart';
@@ -24,7 +27,6 @@ Future<void> main() async {
 }
 
 class App extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -47,13 +49,18 @@ class App extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => ToDoProvider(),
         ),
+        ChangeNotifierProvider(
+          create: (context) => SearchProvider(),
+        ),
         BlocProvider(
           create: (context) => ColorBloc(ColorState.fromColor('white')),
         ),
-            BlocProvider(
+        BlocProvider(
           create: (context) => ToDoViewBloc(ToDoEventStateList()),
         ),
-         
+        BlocProvider(
+          create: (context) => ToDoSearchBloc(ToDoSearchStateFalse()),
+        ),
       ],
       child: MaterialApp(
         title: 'Just do it',

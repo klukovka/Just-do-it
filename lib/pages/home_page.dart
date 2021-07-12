@@ -5,12 +5,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:just_do_it/blocs/auth_bloc.dart';
 import 'package:just_do_it/blocs/states/todo_event_state.dart';
+import 'package:just_do_it/blocs/states/todo_search_state.dart';
+import 'package:just_do_it/blocs/todo_search_bloc.dart';
 import 'package:just_do_it/blocs/todo_view_bloc.dart';
 import 'package:just_do_it/blocs/user_bloc.dart';
 import 'package:just_do_it/models/app_user.dart';
 import 'package:just_do_it/pages/edit_add_todo.dart';
 import 'package:just_do_it/pages/login_page.dart';
 import 'package:just_do_it/pages/recycle_bin.dart';
+import 'package:just_do_it/providers/search_provider.dart';
 import 'package:just_do_it/providers/todo_provider.dart';
 import 'package:just_do_it/providers/user_provider.dart';
 import 'package:just_do_it/services/firestore_service.dart';
@@ -69,6 +72,8 @@ class _HomePageState extends State<HomePage> {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final userBloc = context.read<UserBloc>();
     final toDoViewBloc = BlocProvider.of<ToDoViewBloc>(context);
+    final toDoSearchBloc = BlocProvider.of<ToDoSearchBloc>(context);
+    final searchProvider = Provider.of<SearchProvider>(context, listen: false);
     final firestore = FirestoreService();
 
     return StreamBuilder<User?>(
@@ -82,182 +87,206 @@ class _HomePageState extends State<HomePage> {
                 if (!userSnapshot.hasData) return CustomProgressBar();
                 return BlocBuilder<ToDoViewBloc, ToDoEventState>(
                     builder: (context, snapshotToDoEventState) {
-                  return Scaffold(
-                    appBar: AppBar(
-                      title: Text('Just do it'),
-                      actions: [
-                        ButtonBar(
-                          children: [
-                            IconButton(
-                                onPressed: () {
-                                  if (snapshotToDoEventState
-                                      is ToDoEventStateList)
-                                    toDoViewBloc.add(ToDoViewEvent.grid_event);
-                                  else
-                                    toDoViewBloc.add(ToDoViewEvent.list_event);
-                                },
-                                icon: snapshotToDoEventState.stateIcon)
-                          ],
-                        )
-                      ],
-                    ),
-                    body: userSnapshot.data!.userId != null
-                        ? _selectedIndex == 0
-                            ? snapshotToDoEventState.getToDos(firestore
-                                .getAllToDos('${userSnapshot.data!.userId}'), false, null)
-                            : _selectedIndex == 1
-                                ? snapshotToDoEventState.getToDos(
-                                    firestore.getAllToDos(
-                                        '${userSnapshot.data!.userId}'), false, false)
-                                : snapshotToDoEventState.getToDos(
-                                    firestore.getAllToDos(
-                                        '${userSnapshot.data!.userId}'),  false, true)
-                        : CustomProgressBar(),
-                    bottomNavigationBar: BottomNavigationBar(
-                      items: [
-                        BottomNavigationBarItem(
-                            icon: Icon(Icons.note_rounded), label: 'All'),
-                        BottomNavigationBarItem(
-                            icon: Icon(Icons.lock_clock), label: 'To do'),
-                        BottomNavigationBarItem(
-                            icon: Icon(Icons.check_box), label: 'Done'),
-                      ],
-                      currentIndex: _selectedIndex,
-                      selectedItemColor: Colors.deepPurple,
-                      unselectedItemColor: Colors.blueGrey,
-                      onTap: (index) {
-                        setState(() {
-                          _selectedIndex = index;
-                          print(_selectedIndex);
-                        });
-                      },
-                    ),
-                    drawer: Drawer(
-                      child: Container(
-                        padding: EdgeInsets.symmetric(vertical: 10),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                              child: Column(
-                                children: [
-                                  ListTile(
-                                    title: Text('Name'),
-                                    subtitle: userSnapshot.data!.name == null
-                                        ? Text('Loaging...')
-                                        : Text('${userSnapshot.data!.name}'),
-                                  ),
-                                  ListTile(
-                                    title: Text('Email'),
-                                    subtitle: snapshot.data!.email == null
-                                        ? Text('Loaging...')
-                                        : Text('${snapshot.data!.email}'),
-                                  ),
-                                  if (userSnapshot.data!.auth != 'google')
+                  return BlocBuilder<ToDoSearchBloc, ToDoSearchState>(
+                      builder: (context, snapshotToDoSearchState) {
+                    return Scaffold(
+                      appBar: AppBar(
+                        title: snapshotToDoSearchState.searchWidget(searchProvider.searchValue??'Just do it'),
+                        actions: [
+                          ButtonBar(
+                            children: [
+                              IconButton(
+                                  onPressed: () {
+                                    if (snapshotToDoSearchState
+                                        is ToDoSearchStateTrue) {
+                                      toDoSearchBloc
+                                          .add(ToDoSearchEvent.todoNotSearch);
+                                      searchProvider.changeSearchValue(null);
+                                    } else
+                                      toDoSearchBloc
+                                          .add(ToDoSearchEvent.todoSearch);
+                                  },
+                                  icon: snapshotToDoSearchState.searchIcon),
+                              IconButton(
+                                  onPressed: () {
+                                    if (snapshotToDoEventState
+                                        is ToDoEventStateList)
+                                      toDoViewBloc
+                                          .add(ToDoViewEvent.grid_event);
+                                    else
+                                      toDoViewBloc
+                                          .add(ToDoViewEvent.list_event);
+                                  },
+                                  icon: snapshotToDoEventState.stateIcon)
+                            ],
+                          )
+                        ],
+                      ),
+                      body: userSnapshot.data!.userId != null
+                          ? _selectedIndex == 0
+                              ? snapshotToDoEventState.getToDos(
+                                  firestore.getAllToDos(
+                                      '${userSnapshot.data!.userId}'),
+                                  false,
+                                  null)
+                              : _selectedIndex == 1
+                                  ? snapshotToDoEventState.getToDos(
+                                      firestore.getAllToDos(
+                                          '${userSnapshot.data!.userId}'),
+                                      false,
+                                      false)
+                                  : snapshotToDoEventState.getToDos(
+                                      firestore.getAllToDos(
+                                          '${userSnapshot.data!.userId}'),
+                                      false,
+                                      true)
+                          : CustomProgressBar(),
+                      bottomNavigationBar: BottomNavigationBar(
+                        items: [
+                          BottomNavigationBarItem(
+                              icon: Icon(Icons.note_rounded), label: 'All'),
+                          BottomNavigationBarItem(
+                              icon: Icon(Icons.lock_clock), label: 'To do'),
+                          BottomNavigationBarItem(
+                              icon: Icon(Icons.check_box), label: 'Done'),
+                        ],
+                        currentIndex: _selectedIndex,
+                        selectedItemColor: Colors.deepPurple,
+                        unselectedItemColor: Colors.blueGrey,
+                        onTap: (index) {
+                          setState(() {
+                            _selectedIndex = index;
+                          });
+                        },
+                      ),
+                      drawer: Drawer(
+                        child: Container(
+                          padding: EdgeInsets.symmetric(vertical: 10),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                child: Column(
+                                  children: [
+                                    ListTile(
+                                      title: Text('Name'),
+                                      subtitle: userSnapshot.data!.name == null
+                                          ? Text('Loaging...')
+                                          : Text('${userSnapshot.data!.name}'),
+                                    ),
+                                    ListTile(
+                                      title: Text('Email'),
+                                      subtitle: snapshot.data!.email == null
+                                          ? Text('Loaging...')
+                                          : Text('${snapshot.data!.email}'),
+                                    ),
+                                    if (userSnapshot.data!.auth != 'google')
+                                      // ignore: deprecated_member_use
+                                      RaisedButton(
+                                        onPressed: () async {
+                                          await authBloc.resetPassword(
+                                              '${snapshot.data!.email}');
+                                          _showToast(CustomToast(
+                                            toastText:
+                                                'Request was sent to your email',
+                                            toastColor: Colors.green,
+                                            iconData: Icons.check,
+                                          ));
+                                        },
+                                        child: Text('Change password'),
+                                      ),
                                     // ignore: deprecated_member_use
                                     RaisedButton(
-                                      onPressed: () async {
-                                        await authBloc.resetPassword(
-                                            '${snapshot.data!.email}');
-                                        _showToast(CustomToast(
-                                          toastText:
-                                              'Request was sent to your email',
-                                          toastColor: Colors.green,
-                                          iconData: Icons.check,
-                                        ));
-                                      },
-                                      child: Text('Change password'),
+                                      onPressed: () {},
+                                      child: Text('Change theme'),
                                     ),
-                                  // ignore: deprecated_member_use
-                                  RaisedButton(
-                                    onPressed: () {},
-                                    child: Text('Change theme'),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                            Container(
-                              child: Column(
-                                children: [
-                                  // ignore: deprecated_member_use
-                                  RaisedButton(
-                                    onPressed: () {
-                                      authBloc.logout();
-                                      try {
-                                        authBloc.logoutGoogle();
-                                      } catch (e) {
-                                        print(e);
-                                      }
-                                    },
-                                    child: Text('Log Out'),
-                                  ),
-                                  // ignore: deprecated_member_use
-                                  RaisedButton(
-                                    onPressed: () {
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: (context) => RecycleBin()),
-                                      );
-                                    },
-                                    child: Text('Recycle bin'),
-                                  ),
-                                  // ignore: deprecated_member_use
-                                  RaisedButton(
-                                    onPressed: () {
-                                      showDialog(
-                                          context: context,
-                                          builder: (context) {
-                                            return AlertDialog(
-                                              title: Text('Attention!'),
-                                              content: Text(
-                                                  'Do you really want to delete your account?'),
-                                              actions: [
-                                                TextButton(
-                                                    onPressed: () {
-                                                      authBloc.logoutGoogle();
-                                                      firestore
-                                                          .removeAllToDos(
-                                                              '${userSnapshot.data!.userId}')
-                                                          .then((value) => firestore
-                                                              .removeUser(
-                                                                  '${userSnapshot.data!.userId}')
-                                                              .then((value) =>
-                                                                  authBloc
-                                                                      .deleteUser()));
+                              Container(
+                                child: Column(
+                                  children: [
+                                    // ignore: deprecated_member_use
+                                    RaisedButton(
+                                      onPressed: () {
+                                        authBloc.logout();
+                                        try {
+                                          authBloc.logoutGoogle();
+                                        } catch (e) {
+                                          print(e);
+                                        }
+                                      },
+                                      child: Text('Log Out'),
+                                    ),
+                                    // ignore: deprecated_member_use
+                                    RaisedButton(
+                                      onPressed: () {
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  RecycleBin()),
+                                        );
+                                      },
+                                      child: Text('Recycle bin'),
+                                    ),
+                                    // ignore: deprecated_member_use
+                                    RaisedButton(
+                                      onPressed: () {
+                                        showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return AlertDialog(
+                                                title: Text('Attention!'),
+                                                content: Text(
+                                                    'Do you really want to delete your account?'),
+                                                actions: [
+                                                  TextButton(
+                                                      onPressed: () {
+                                                        authBloc.logoutGoogle();
+                                                        firestore
+                                                            .removeAllToDos(
+                                                                '${userSnapshot.data!.userId}')
+                                                            .then((value) => firestore
+                                                                .removeUser(
+                                                                    '${userSnapshot.data!.userId}')
+                                                                .then((value) =>
+                                                                    authBloc
+                                                                        .deleteUser()));
 
-                                                      Navigator.of(context)
-                                                          .pop();
-                                                    },
-                                                    child: Text('Yes')),
-                                                TextButton(
-                                                    onPressed: () {
-                                                      Navigator.of(context)
-                                                          .pop();
-                                                    },
-                                                    child: Text('No'))
-                                              ],
-                                            );
-                                          });
-                                    },
-                                    child: Text('Delete an account'),
-                                  ),
-                                ],
-                              ),
-                            )
-                          ],
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                      child: Text('Yes')),
+                                                  TextButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                      child: Text('No'))
+                                                ],
+                                              );
+                                            });
+                                      },
+                                      child: Text('Delete an account'),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    floatingActionButton: FloatingActionButton(
-                      child: Icon(Icons.add),
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          SwipeablePageRoute(
-                              builder: (context) => EditAddToDo()),
-                        );
-                      },
-                    ),
-                  );
+                      floatingActionButton: FloatingActionButton(
+                        child: Icon(Icons.add),
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            SwipeablePageRoute(
+                                builder: (context) => EditAddToDo()),
+                          );
+                        },
+                      ),
+                    );
+                  });
                 });
               });
         });
