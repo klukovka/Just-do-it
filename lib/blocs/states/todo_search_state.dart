@@ -8,7 +8,7 @@ abstract class ToDoSearchState {
 
 class ToDoSearchStateTrue extends ToDoSearchState {
   @override
-  Icon get searchIcon => Icon(Icons.search_off);
+  Icon get searchIcon => Icon(Icons.close);
 
   @override
   Widget searchWidget(String? value) => SearchBar();
