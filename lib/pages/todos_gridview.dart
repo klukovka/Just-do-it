@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:just_do_it/models/todo.dart';
 import 'package:just_do_it/services/firestore_service.dart';
 import 'package:just_do_it/widgets/custom_progress_bar.dart';
+import 'package:just_do_it/widgets/empty_list.dart';
 import 'package:just_do_it/widgets/slidable_todo.dart';
 import 'package:just_do_it/widgets/swipe_todo.dart';
 import 'package:just_do_it/widgets/todo_line.dart';
@@ -35,6 +36,8 @@ class ToDosGridView extends StatelessWidget {
             else
               return element.inTrash == inTrash;
           }).toList();
+          
+          if (list.length == 0) return EmptyList();
 
           List<Widget> widgets = [];
           for (int i = 0; i < list.length; i++) {

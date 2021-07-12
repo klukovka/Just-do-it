@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:just_do_it/models/todo.dart';
 import 'package:just_do_it/services/firestore_service.dart';
 import 'package:just_do_it/widgets/custom_progress_bar.dart';
+import 'package:just_do_it/widgets/empty_list.dart';
 import 'package:just_do_it/widgets/slidable_todo.dart';
 import 'package:just_do_it/widgets/todo_line.dart';
 
@@ -25,11 +26,6 @@ class ToDosLine extends StatelessWidget {
               child: Text('Error'),
             );
 
-          if (snapshot.data!.length == 0)
-            return Center(
-              child: Text('Empty'),
-            );
-
           List<ToDo> list = snapshot.data ?? [];
           list.sort(
               (todo1, todo2) => todo2.dateCreate!.compareTo(todo1.dateCreate!));
@@ -41,7 +37,7 @@ class ToDosLine extends StatelessWidget {
               return element.inTrash == inTrash;
           }).toList();
 
-          //  print('Snapshot => ${snapshot.data!.length}; List => ${list.length}');
+          if (list.length == 0) return EmptyList();
 
           return ListView.separated(
             itemBuilder: (context, index) => SlidableToDo(
