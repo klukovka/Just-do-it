@@ -104,14 +104,14 @@ class _HomePageState extends State<HomePage> {
                     body: userSnapshot.data!.userId != null
                         ? _selectedIndex == 0
                             ? snapshotToDoEventState.getToDos(firestore
-                                .getAllToDos('${userSnapshot.data!.userId}'))
+                                .getAllToDos('${userSnapshot.data!.userId}'), false, null)
                             : _selectedIndex == 1
                                 ? snapshotToDoEventState.getToDos(
-                                    firestore.getNotDoneToDos(
-                                        '${userSnapshot.data!.userId}'))
+                                    firestore.getAllToDos(
+                                        '${userSnapshot.data!.userId}'), false, false)
                                 : snapshotToDoEventState.getToDos(
-                                    firestore.getDoneToDos(
-                                        '${userSnapshot.data!.userId}'))
+                                    firestore.getAllToDos(
+                                        '${userSnapshot.data!.userId}'),  false, true)
                         : CustomProgressBar(),
                     bottomNavigationBar: BottomNavigationBar(
                       items: [

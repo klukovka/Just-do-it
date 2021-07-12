@@ -5,13 +5,18 @@ import 'package:just_do_it/pages/todos_gridview.dart';
 import 'package:just_do_it/pages/todos_line.dart';
 
 abstract class ToDoEventState {
-  Widget getToDos(Stream<List<ToDo>> todos);
+  Widget getToDos(Stream<List<ToDo>> todos, bool inTrash, bool? done);
   Icon get stateIcon;
 }
 
 class ToDoEventStateList extends ToDoEventState {
   @override
-  Widget getToDos(Stream<List<ToDo>> todos) => ToDosLine(todos: todos);
+  Widget getToDos(Stream<List<ToDo>> todos, bool inTrash, bool? done) =>
+      ToDosLine(
+        todos: todos,
+        inTrash: inTrash,
+        done: done,
+      );
 
   @override
   Icon get stateIcon => Icon(Icons.grid_4x4);
@@ -19,7 +24,12 @@ class ToDoEventStateList extends ToDoEventState {
 
 class ToDoEventStateGrid extends ToDoEventState {
   @override
-  Widget getToDos(Stream<List<ToDo>> todos) => ToDosGridView(todos: todos);
+  Widget getToDos(Stream<List<ToDo>> todos, bool inTrash, bool? done) =>
+      ToDosGridView(
+        todos: todos,
+        inTrash: inTrash,
+        done: done,
+      );
 
   @override
   Icon get stateIcon => Icon(Icons.line_style);

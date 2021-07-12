@@ -10,7 +10,9 @@ import 'package:just_do_it/widgets/todo_line.dart';
 class ToDosGridView extends StatelessWidget {
   final FirestoreService firestoreService = FirestoreService();
   Stream<List<ToDo>> todos;
-  ToDosGridView({required this.todos});
+  final bool inTrash;
+  final bool? done;
+  ToDosGridView({required this.todos, required this.inTrash, this.done});
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +26,16 @@ class ToDosGridView extends StatelessWidget {
             );
 
           List<ToDo> list = snapshot.data ?? [];
+          list.sort(
+              (todo1, todo2) => todo2.dateCreate!.compareTo(todo1.dateCreate!));
+
+          list = list.where((element) {
+            if (done != null)
+              return element.done == done && element.inTrash == inTrash;
+            else
+              return element.inTrash == inTrash;
+          }).toList();
+
           List<Widget> widgets = [];
           for (int i = 0; i < list.length; i++) {
             if (list[i].inTrash == true) {

@@ -29,9 +29,9 @@ class FirestoreService {
   Stream<List<ToDo>> getAllToDos(String userId) {
     return _db
         .collection('todos')
+        // .orderBy('dateCreate', descending: true)
         .where('userId', isEqualTo: userId)
-        .where('inTrash', isEqualTo: false)
-        // .orderBy('dateCreate')
+     //   .where('inTrash', isEqualTo: false)
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((document) => ToDo.fromFirestore(document.data()))

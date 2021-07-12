@@ -8,8 +8,11 @@ import 'package:just_do_it/widgets/todo_line.dart';
 // ignore: must_be_immutable
 class ToDosLine extends StatelessWidget {
   final FirestoreService firestoreService = FirestoreService();
-  Stream<List<ToDo>> todos;
-  ToDosLine({required this.todos});
+  final Stream<List<ToDo>> todos;
+  final bool inTrash;
+  final bool? done;
+
+  ToDosLine({required this.todos, required this.inTrash, this.done});
 
   @override
   Widget build(BuildContext context) {
@@ -22,13 +25,23 @@ class ToDosLine extends StatelessWidget {
               child: Text('Error'),
             );
 
-             if (snapshot.data!.length==0)
+          if (snapshot.data!.length == 0)
             return Center(
               child: Text('Empty'),
-            ); 
+            );
 
           List<ToDo> list = snapshot.data ?? [];
-        //  print('Snapshot => ${snapshot.data!.length}; List => ${list.length}');
+          list.sort(
+              (todo1, todo2) => todo2.dateCreate!.compareTo(todo1.dateCreate!));
+
+          list = list.where((element) {
+            if (done != null)
+              return element.done == done && element.inTrash == inTrash;
+            else
+              return element.inTrash == inTrash;
+          }).toList();
+
+          //  print('Snapshot => ${snapshot.data!.length}; List => ${list.length}');
 
           return ListView.separated(
             itemBuilder: (context, index) => SlidableToDo(

@@ -45,8 +45,9 @@ class RecycleBin extends StatelessWidget {
                 ],
               ),
               body: snapshotToDoEventState.getToDos(
-                firestoreService.getToDosInTrash('${snapshot.data!.userId}'),
-              ),
+                  firestoreService.getAllToDos('${snapshot.data!.userId}'),
+                  true,
+                  null),
               floatingActionButton: FloatingActionButton(
                 onPressed: () {
                   showDialog(
