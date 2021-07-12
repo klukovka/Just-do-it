@@ -16,7 +16,9 @@ import 'package:provider/provider.dart';
 // ignore: must_be_immutable
 class EditAddToDo extends StatefulWidget {
   ToDo? todo;
-  EditAddToDo({Key? key, this.todo}) : super(key: key);
+  GlobalKey<ScaffoldState> scaffoldKey;
+  EditAddToDo({Key? key, this.todo, required this.scaffoldKey})
+      : super(key: key);
 
   @override
   _EditAddToDoState createState() => _EditAddToDoState();
@@ -254,7 +256,7 @@ class _EditAddToDoState extends State<EditAddToDo> {
                     todoProvider.saveToDo();
 
                     // ignore: deprecated_member_use
-                    Scaffold.of(context).showSnackBar(
+                    widget.scaffoldKey.currentState!.showSnackBar(
                       SnackBar(
                         backgroundColor: Colors.green,
                         duration: Duration(seconds: 2),
@@ -262,11 +264,9 @@ class _EditAddToDoState extends State<EditAddToDo> {
                       ),
                     );
 
-                    Future.delayed(Duration(seconds: 2), () {
-                      _bloc.add(ColorEvent.white);
-                      todoProvider.nullToDo();
-                      Navigator.of(context).pop();
-                    });
+                    _bloc.add(ColorEvent.white);
+                    todoProvider.nullToDo();
+                    Navigator.of(context).pop();
                   } else {
                     _showToast('Input correct data');
                   }

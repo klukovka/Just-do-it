@@ -7,7 +7,9 @@ import 'package:swipe_to/swipe_to.dart';
 class SwipeToDo extends StatelessWidget {
   final Widget child;
   final ToDo todo;
-  const SwipeToDo({Key? key, required this.child, required this.todo})
+ final  GlobalKey<ScaffoldState> scaffoldKey;
+
+  const SwipeToDo({Key? key, required this.child, required this.todo, required this.scaffoldKey})
       : super(key: key);
 
   @override
@@ -28,13 +30,13 @@ class SwipeToDo extends StatelessWidget {
                       onPressed: () {
                         todo.inTrash = true;
                         // ignore: deprecated_member_use
-                        /*     Scaffold.of(context).showSnackBar(
+                           scaffoldKey.currentState!.showSnackBar(
                               SnackBar(
                                 backgroundColor: Colors.red[700],
                                 duration: Duration(seconds: 2),
                                 content: Text('Todo moved to recycle bin'),
                               ),
-                            ); */
+                            ); 
                         firestoreService.saveToDo(todo);
 
                         Navigator.of(context).pop();

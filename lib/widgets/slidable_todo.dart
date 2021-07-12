@@ -6,7 +6,13 @@ import 'package:just_do_it/services/firestore_service.dart';
 class SlidableToDo extends StatelessWidget {
   final Widget child;
   final ToDo todo;
-  const SlidableToDo({Key? key, required this.child, required this.todo})
+  final GlobalKey<ScaffoldState> scaffoldKey;
+
+  const SlidableToDo(
+      {Key? key,
+      required this.child,
+      required this.todo,
+      required this.scaffoldKey})
       : super(key: key);
 
   List<Widget> slidableActions(BuildContext context) {
@@ -29,13 +35,13 @@ class SlidableToDo extends StatelessWidget {
                           onPressed: () {
                             todo.inTrash = true;
                             // ignore: deprecated_member_use
-                       /*     Scaffold.of(context).showSnackBar(
+                                scaffoldKey.currentState!.showSnackBar(
                               SnackBar(
                                 backgroundColor: Colors.red[700],
                                 duration: Duration(seconds: 2),
                                 content: Text('Todo moved to recycle bin'),
                               ),
-                            ); */
+                            ); 
                             firestoreService.saveToDo(todo);
                             Navigator.of(context).pop();
                           },
@@ -59,13 +65,13 @@ class SlidableToDo extends StatelessWidget {
         onTap: () {
           todo.inTrash = false;
           // ignore: deprecated_member_use
-        /*  Scaffold.of(context).showSnackBar(
+            scaffoldKey.currentState!.showSnackBar(
             SnackBar(
               backgroundColor: Colors.green,
               duration: Duration(seconds: 2),
               content: Text('Todo was restored'),
             ),
-          ); */
+          ); 
           firestoreService.saveToDo(todo);
         },
       ),
@@ -84,13 +90,13 @@ class SlidableToDo extends StatelessWidget {
                     TextButton(
                         onPressed: () {
                           // ignore: deprecated_member_use
-                        /*  Scaffold.of(context).showSnackBar(
+                            scaffoldKey.currentState!.showSnackBar(
                             SnackBar(
                               backgroundColor: Colors.redAccent[700],
                               duration: Duration(seconds: 2),
                               content: Text('Todo was deleted'),
                             ),
-                          ); */
+                          ); 
                           firestoreService.removeToDo('${todo.toDoId}');
                           Navigator.of(context).pop();
                         },

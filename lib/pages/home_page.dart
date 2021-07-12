@@ -140,18 +140,18 @@ class _HomePageState extends State<HomePage> {
                                   firestore.getAllToDos(
                                       '${userSnapshot.data!.userId}'),
                                   false,
-                                  null)
+                                  null, scaffoldKey)
                               : _selectedIndex == 1
                                   ? snapshotToDoEventState.getToDos(
                                       firestore.getAllToDos(
                                           '${userSnapshot.data!.userId}'),
                                       false,
-                                      false)
+                                      false, scaffoldKey)
                                   : snapshotToDoEventState.getToDos(
                                       firestore.getAllToDos(
                                           '${userSnapshot.data!.userId}'),
                                       false,
-                                      true)
+                                      true, scaffoldKey)
                           : CustomProgressBar(),
                       bottomNavigationBar: BottomNavigationBar(
                         items: [
@@ -293,7 +293,7 @@ class _HomePageState extends State<HomePage> {
                         onPressed: () {
                           Navigator.of(context).push(
                             SwipeablePageRoute(
-                                builder: (context) => EditAddToDo()),
+                                builder: (context) => EditAddToDo(scaffoldKey: scaffoldKey,)),
                           );
                         },
                       ),

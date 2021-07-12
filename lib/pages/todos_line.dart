@@ -14,8 +14,14 @@ class ToDosLine extends StatelessWidget {
   final Stream<List<ToDo>> todos;
   final bool inTrash;
   final bool? done;
+  final GlobalKey<ScaffoldState> scaffoldKey;
 
-  ToDosLine({required this.todos, required this.inTrash, this.done});
+  ToDosLine({
+    required this.todos,
+    required this.inTrash,
+    this.done,
+    required this.scaffoldKey,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -52,8 +58,9 @@ class ToDosLine extends StatelessWidget {
 
           return ListView.separated(
             itemBuilder: (context, index) => SlidableToDo(
+              scaffoldKey: scaffoldKey,
               todo: list[index],
-              child: ToDoLine(todo: list[index]),
+              child: ToDoLine(todo: list[index],scaffoldKey: scaffoldKey,),
             ),
             itemCount: list.length,
             separatorBuilder: (BuildContext context, int index) => SizedBox(

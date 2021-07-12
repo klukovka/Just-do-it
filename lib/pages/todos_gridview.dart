@@ -15,7 +15,13 @@ class ToDosGridView extends StatelessWidget {
   Stream<List<ToDo>> todos;
   final bool inTrash;
   final bool? done;
-  ToDosGridView({required this.todos, required this.inTrash, this.done});
+  final GlobalKey<ScaffoldState> scaffoldKey;
+  ToDosGridView({
+    required this.todos,
+    required this.inTrash,
+    this.done,
+    required this.scaffoldKey,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -56,12 +62,14 @@ class ToDosGridView extends StatelessWidget {
             if (list[i].inTrash == true) {
               widgets.add(SlidableToDo(
                 todo: list[i],
-                child: ToDoLine(todo: list[i]),
+                child: ToDoLine(todo: list[i], scaffoldKey: scaffoldKey,),
+                scaffoldKey: scaffoldKey,
               ));
             } else {
               widgets.add(SwipeToDo(
+                scaffoldKey: scaffoldKey,
                 todo: list[i],
-                child: ToDoLine(todo: list[i]),
+                child: ToDoLine(todo: list[i], scaffoldKey: scaffoldKey,),
               ));
             }
           }

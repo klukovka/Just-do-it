@@ -73,7 +73,7 @@ class RecycleBin extends StatelessWidget {
                 body: snapshotToDoEventState.getToDos(
                     firestoreService.getAllToDos('${snapshot.data!.userId}'),
                     true,
-                    null),
+                    null, scaffoldKey),
                 floatingActionButton: FloatingActionButton(
                   onPressed: () {
                     showDialog(
@@ -85,14 +85,16 @@ class RecycleBin extends StatelessWidget {
                             actions: [
                               TextButton(
                                   onPressed: () {
+                                    
                                     // ignore: deprecated_member_use
-                                    /*     Scaffold.of(context).showSnackBar(
+                                    scaffoldKey.currentState!.showSnackBar(
                                   SnackBar(
                                     backgroundColor: Colors.red[700],
                                     duration: Duration(seconds: 2),
-                                    content: Text('Todo moved to recycle bin'),
+                                    content: Text('All todos were deleted'),
                                   ),
-                                ); */
+                                ); 
+
                                     firestoreService.removeAllToDos(
                                         '${userProvider.userId}');
                                     Navigator.of(context).pop();
