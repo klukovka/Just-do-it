@@ -19,7 +19,7 @@ class ToDoEventStateList extends ToDoEventState {
       );
 
   @override
-  Icon get stateIcon => Icon(Icons.grid_4x4);
+  Icon get stateIcon => Icon(Icons.apps_outlined);
 }
 
 class ToDoEventStateGrid extends ToDoEventState {

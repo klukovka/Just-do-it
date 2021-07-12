@@ -2,22 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:just_do_it/widgets/search_bar.dart';
 
 abstract class ToDoSearchState {
-  Icon get searchIcon;
+  Icon get leftIcon;
   Widget searchWidget(String? value);
 }
 
 class ToDoSearchStateTrue extends ToDoSearchState {
   @override
-  Icon get searchIcon => Icon(Icons.close);
+  Widget searchWidget(String? value) => SearchBar();
 
   @override
-  Widget searchWidget(String? value) => SearchBar();
+  Icon get leftIcon => Icon(Icons.arrow_back);
 }
 
 class ToDoSearchStateFalse extends ToDoSearchState {
   @override
-  Icon get searchIcon => Icon(Icons.search);
+  Widget searchWidget(String? value) => Text('$value');
 
   @override
-  Widget searchWidget(String? value) => Text('$value');
+  Icon get leftIcon => Icon(Icons.dehaze_outlined);
 }

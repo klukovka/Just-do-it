@@ -28,6 +28,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final scaffoldKey = GlobalKey<ScaffoldState>();
   late StreamSubscription<User?> loginStreamSubscription;
   FToast fToast = FToast();
   int _selectedIndex = 1;
@@ -90,23 +91,34 @@ class _HomePageState extends State<HomePage> {
                   return BlocBuilder<ToDoSearchBloc, ToDoSearchState>(
                       builder: (context, snapshotToDoSearchState) {
                     return Scaffold(
+                      key: scaffoldKey,
                       appBar: AppBar(
-                        title: snapshotToDoSearchState.searchWidget(searchProvider.searchValue??'Just do it'),
+                        title: snapshotToDoSearchState.searchWidget(
+                          searchProvider.searchValue ?? 'Just do it',
+                        ),
+                        leading: IconButton(
+                            icon: snapshotToDoSearchState.leftIcon,
+                            onPressed: () {
+                              if (snapshotToDoSearchState
+                                  is ToDoSearchStateFalse) {
+                                scaffoldKey.currentState!.openDrawer();
+                              } else {
+                                toDoSearchBloc
+                                    .add(ToDoSearchEvent.todoNotSearch);
+                                searchProvider.changeSearchValue(null);
+                              }
+                            }),
                         actions: [
                           ButtonBar(
                             children: [
-                              IconButton(
-                                  onPressed: () {
-                                    if (snapshotToDoSearchState
-                                        is ToDoSearchStateTrue) {
-                                      toDoSearchBloc
-                                          .add(ToDoSearchEvent.todoNotSearch);
-                                      searchProvider.changeSearchValue(null);
-                                    } else
+                              if (snapshotToDoSearchState
+                                  is ToDoSearchStateFalse)
+                                IconButton(
+                                    onPressed: () {
                                       toDoSearchBloc
                                           .add(ToDoSearchEvent.todoSearch);
-                                  },
-                                  icon: snapshotToDoSearchState.searchIcon),
+                                    },
+                                    icon: Icon(Icons.search)),
                               IconButton(
                                   onPressed: () {
                                     if (snapshotToDoEventState

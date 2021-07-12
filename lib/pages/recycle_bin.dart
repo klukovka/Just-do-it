@@ -12,7 +12,8 @@ import 'package:just_do_it/widgets/custom_progress_bar.dart';
 import 'package:provider/provider.dart';
 
 class RecycleBin extends StatelessWidget {
-  const RecycleBin({Key? key}) : super(key: key);
+  final scaffoldKey = GlobalKey<ScaffoldState>();
+  RecycleBin({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -34,24 +35,29 @@ class RecycleBin extends StatelessWidget {
             return BlocBuilder<ToDoSearchBloc, ToDoSearchState>(
                 builder: (context, snapshotToDoSearchState) {
               return Scaffold(
+                key: scaffoldKey,
                 appBar: AppBar(
                   title: snapshotToDoSearchState.searchWidget(
                       searchProvider.searchValue ?? 'Recycle Bin'),
+                  leading: IconButton(
+                      icon: Icon(Icons.arrow_back),
+                      onPressed: () {
+                        if (snapshotToDoSearchState is ToDoSearchStateFalse) {
+                          Navigator.of(context).pop();
+                        } else {
+                          toDoSearchBloc.add(ToDoSearchEvent.todoNotSearch);
+                          searchProvider.changeSearchValue(null);
+                        }
+                      }),
                   actions: [
                     ButtonBar(
                       children: [
+                        if (snapshotToDoSearchState is ToDoSearchStateFalse)
                           IconButton(
-                                  onPressed: () {
-                                    if (snapshotToDoSearchState
-                                        is ToDoSearchStateTrue) {
-                                      toDoSearchBloc
-                                          .add(ToDoSearchEvent.todoNotSearch);
-                                      searchProvider.changeSearchValue(null);
-                                    } else
-                                      toDoSearchBloc
-                                          .add(ToDoSearchEvent.todoSearch);
-                                  },
-                                  icon: snapshotToDoSearchState.searchIcon),
+                              onPressed: () {
+                                toDoSearchBloc.add(ToDoSearchEvent.todoSearch);
+                              },
+                              icon: Icon(Icons.search)),
                         IconButton(
                             onPressed: () {
                               if (snapshotToDoEventState is ToDoEventStateList)
