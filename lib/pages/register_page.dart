@@ -5,42 +5,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:just_do_it/blocs/auth_bloc.dart';
-import 'package:just_do_it/pages/home_page.dart';
+import 'package:just_do_it/blocs/validation_bloc.dart';
 import 'package:just_do_it/pages/login_page.dart';
+import 'package:just_do_it/providers/user_provider.dart';
 import 'package:just_do_it/widgets/custom_toast.dart';
 import 'package:provider/provider.dart';
 
+import 'home_page.dart';
+
 class RegisterPage extends StatefulWidget {
-  RegisterPage({Key? key}) : super(key: key);
+  const RegisterPage({Key? key}) : super(key: key);
 
   @override
   _RegisterPageState createState() => _RegisterPageState();
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final _formKey = GlobalKey<FormState>();
-  final RegExp _emailRegExp = RegExp(
-    r'^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$',
-  );
-  final RegExp _passwordRegExp = RegExp(
-    r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$',
-  );
   late StreamSubscription<User?> loginStreamSubscription;
-
   FToast fToast = FToast();
-  String _name = '';
-  String _email = '';
-  String _password = '';
-
-  TextEditingController _nameController = TextEditingController();
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
 
   @override
   void initState() {
-    _nameController.text = _name;
-    _emailController.text = _email;
-    _passwordController.text = _password;
     fToast.init(context);
     var authBloc = Provider.of<AuthBloc>(context, listen: false);
     loginStreamSubscription = authBloc.currentUser.listen((fbUser) {
@@ -66,119 +51,149 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  bool _isEmailValid(String email) {
-    return _emailRegExp.hasMatch(email);
+  Widget nameWidget(ValidationBloc bloc) {
+    final userProvider = Provider.of<UserProvider>(context);
+    return StreamBuilder<Object>(
+      stream: bloc.name,
+      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: TextField(
+            keyboardType: TextInputType.name,
+            decoration: InputDecoration(
+              labelText: 'Name',
+              icon: Icon(Icons.account_circle),
+              errorText:
+                  '${snapshot.error}' == 'null' ? null : '${snapshot.error}',
+            ),
+            onChanged: (value) {
+              bloc.changeName(value);
+              userProvider.changeName(value);
+            },
+          ),
+        );
+      },
+    );
   }
 
-  bool _isPasswordValid(String password) {
-    return _passwordRegExp.hasMatch(password);
+  Widget emailWidget(ValidationBloc bloc) {
+    return StreamBuilder<Object>(
+        stream: bloc.email,
+        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              keyboardType: TextInputType.emailAddress,
+              decoration: InputDecoration(
+                labelText: 'Email',
+                icon: Icon(Icons.email),
+                errorText:
+                    '${snapshot.error}' == 'null' ? null : '${snapshot.error}',
+              ),
+              onChanged: bloc.changeEmail,
+            ),
+          );
+        });
   }
+
+  Widget passwordWidget(ValidationBloc bloc) {
+    return StreamBuilder<Object>(
+        stream: bloc.password,
+        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              obscureText: true,
+              decoration: InputDecoration(
+                labelText: 'Password',
+                icon: Icon(Icons.password),
+                errorText:
+                    '${snapshot.error}' == 'null' ? null : '${snapshot.error}',
+              ),
+              onChanged: bloc.changePassword,
+            ),
+          );
+        });
+  }
+
+  Widget repeatedPasswordWidget(ValidationBloc bloc) {
+    return StreamBuilder<Object>(
+        stream: bloc.repeatedPassword,
+        builder: (context, snapshot) {
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              obscureText: true,
+              decoration: InputDecoration(
+                labelText: 'Password',
+                icon: Icon(Icons.password),
+                errorText:
+                    '${snapshot.error}' == 'null' ? null : '${snapshot.error}',
+              ),
+              onChanged: bloc.changeRepeatedPassword,
+            ),
+          );
+        });
+  }
+
+  void toLogin() => Navigator.of(context)
+      .pushReplacement(MaterialPageRoute(builder: (context) => LoginPage()));
 
   @override
   Widget build(BuildContext context) {
+    final validationBloc = Provider.of<ValidationBloc>(context);
+    final userProvider = Provider.of<UserProvider>(context);
     final authBloc = context.read<AuthBloc>();
     return Scaffold(
-      body: Form(
-        key: _formKey,
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextFormField(
-                    keyboardType: TextInputType.name,
-                    decoration: InputDecoration(
-                      labelText: 'Name',
-                      icon: Icon(Icons.account_circle),
-                    ),
-                    controller: _nameController,
-                    validator: (value) {
-                      if (value == null || value.length < 1)
-                        return 'Please enter name';
-                      _nameController.text = _name = value;
-                      return null;
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextFormField(
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
-                        labelText: 'Email', icon: Icon(Icons.email)),
-                    controller: _emailController,
-                    validator: (value) {
-                      if (value == null || value.length < 1)
-                        return 'Please enter email';
-                      if (_isEmailValid(value))
-                        return 'Please enter correct email';
+      body: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              nameWidget(validationBloc),
+              emailWidget(validationBloc),
+              passwordWidget(validationBloc),
+              repeatedPasswordWidget(validationBloc),
+              StreamBuilder<Object>(
+                  stream: validationBloc.formValid,
+                  builder: (context, snapshot) {
+                    return SignInButton(Buttons.Email, text: 'Sign Up',
+                        onPressed: () async {
+                      /*  !snapshot.hasData ? print(bloc.identicalPasswords) : bloc.submitData(); */
+                      var signUpBool = snapshot.hasData;
+                      if (signUpBool) {
+                        if (validationBloc.identicalPasswords) {
+                          print('register');
 
-                      _emailController.text = _email = value;
-                      return null;
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextFormField(
-                    obscureText: true,
-                    decoration: InputDecoration(
-                        labelText: 'Password', icon: Icon(Icons.password)),
-                    controller: _passwordController,
-                    validator: (value) {
-                      if (value == null || value.length < 1)
-                        return 'Please enter password';
-                      if (_isPasswordValid(value))
-                        return 'Please enter correct password';
+                          try {
+                            var email = '${validationBloc.getEmail}';
+                            var password = '${validationBloc.getPassword}';
 
-                      _passwordController.text = _password = value;
-                      return null;
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextFormField(
-                    obscureText: true,
-                    decoration: InputDecoration(
-                        labelText: 'Repeat password',
-                        icon: Icon(Icons.password)),
-                    validator: (value) {
-                      if (value == null || value.length < 1)
-                        return 'Please enter password';
-                      if (value.length < 8)
-                        return 'Please enter correct password';
-                      if (value != _password)
-                        return 'Passwords is not identical';
-                      return null;
-                    },
-                  ),
-                ),
-                SignInButton(Buttons.Email, text: 'Sign Up',
-                    onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    try {
-                     await authBloc.createUserWithEmail(_email, _password);
-                    } on FirebaseAuthException catch (ex) {
-                      print(ex.message);
-                      _showToast('${ex.message}');
-                    } catch (ex) {
-                      print(ex.toString());
-                      _showToast('Ooops! Something went wrong :(');
-                    }
-                  } else {
-                    _showToast('Inspect your data carefully');
-                  }
-                }),
-                // ignore: deprecated_member_use
-                FlatButton(
-                    onPressed: () => Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (context) => LoginPage())),
-                    child: Text('I have an account')),
-              ],
-            ),
+                            User user = await authBloc.createUserWithEmail(
+                                email, password);
+                            await userProvider.changeUserId(user.uid);
+                            await userProvider.saveUser('email');
+                            toLogin();
+                          } on FirebaseAuthException catch (ex) {
+                            print(ex.message);
+                            _showToast('${ex.message}');
+                          } catch (ex) {
+                            print(ex.toString());
+                            _showToast('Ooops! Something wents wrong :(');
+                          }
+                        } else {
+                          print('passwords');
+                          _showToast('Passwords is not identical');
+                        }
+                      } else {
+                        _showToast('Inspect your data carefully');
+                        print('invalid');
+                      }
+                    });
+                  }),
+              // ignore: deprecated_member_use
+              FlatButton(onPressed: toLogin, child: Text('I have an account')),
+            ],
           ),
         ),
       ),

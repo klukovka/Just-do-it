@@ -39,10 +39,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   FToast fToast = FToast();
   int _selectedIndex = 1;
 
-  void turning(double angle) {
-    turnsAnimationController.animateTo(angle, curve: Curves.easeInOutQuart);
-  }
-
   @override
   void initState() {
     fToast.init(context);

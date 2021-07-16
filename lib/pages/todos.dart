@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:just_do_it/blocs/states/todo_event_state.dart';
 import 'package:just_do_it/models/todo.dart';
 import 'package:just_do_it/providers/search_provider.dart';
 import 'package:just_do_it/services/firestore_service.dart';
@@ -10,17 +11,20 @@ import 'package:just_do_it/widgets/todo_line.dart';
 import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
-class ToDosGridView extends StatelessWidget {
+class ToDos extends StatelessWidget {
   final FirestoreService firestoreService = FirestoreService();
-  Stream<List<ToDo>> todos;
+  final Stream<List<ToDo>> todos;
   final bool inTrash;
   final bool? done;
   final GlobalKey<ScaffoldState> scaffoldKey;
-  ToDosGridView({
+  final ToDoEventState state;
+
+  ToDos({
     required this.todos,
     required this.inTrash,
     this.done,
     required this.scaffoldKey,
+    required this.state,
   });
 
   @override
@@ -57,28 +61,51 @@ class ToDosGridView extends StatelessWidget {
 
           if (list.length == 0) return EmptyList();
 
-          List<Widget> widgets = [];
-          for (int i = 0; i < list.length; i++) {
-            if (list[i].inTrash == true) {
-              widgets.add(SlidableToDo(
-                todo: list[i],
-                child: ToDoLine(todo: list[i], scaffoldKey: scaffoldKey,),
+          if (state is ToDoEventStateList) {
+            return ListView.separated(
+              itemBuilder: (context, index) => SlidableToDo(
                 scaffoldKey: scaffoldKey,
-              ));
-            } else {
-              widgets.add(SwipeToDo(
-                scaffoldKey: scaffoldKey,
-                todo: list[i],
-                child: ToDoLine(todo: list[i], scaffoldKey: scaffoldKey,),
-              ));
+                todo: list[index],
+                child: ToDoLine(
+                  todo: list[index],
+                  scaffoldKey: scaffoldKey,
+                ),
+              ),
+              itemCount: list.length,
+              separatorBuilder: (BuildContext context, int index) => SizedBox(
+                height: 15,
+              ),
+            );
+          } else {
+            List<Widget> widgets = [];
+            for (int i = 0; i < list.length; i++) {
+              if (list[i].inTrash == true) {
+                widgets.add(SlidableToDo(
+                  todo: list[i],
+                  child: ToDoLine(
+                    todo: list[i],
+                    scaffoldKey: scaffoldKey,
+                  ),
+                  scaffoldKey: scaffoldKey,
+                ));
+              } else {
+                widgets.add(SwipeToDo(
+                  scaffoldKey: scaffoldKey,
+                  todo: list[i],
+                  child: ToDoLine(
+                    todo: list[i],
+                    scaffoldKey: scaffoldKey,
+                  ),
+                ));
+              }
             }
+            return GridView.count(
+              crossAxisCount: 2,
+              mainAxisSpacing: 8,
+              crossAxisSpacing: 8,
+              children: widgets,
+            );
           }
-          return GridView.count(
-            crossAxisCount: 2,
-            mainAxisSpacing: 8,
-            crossAxisSpacing: 8,
-            children: widgets,
-          );
         });
   }
 }
