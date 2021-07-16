@@ -22,7 +22,10 @@ class ToDoEventStateList extends ToDoEventState {
       );
 
   @override
-  Icon get stateIcon => Icon(Icons.apps_outlined);
+  Icon get stateIcon => Icon(
+        Icons.apps_outlined,
+        key: ValueKey<String>('List'),
+      );
 }
 
 class ToDoEventStateGrid extends ToDoEventState {
@@ -37,5 +40,8 @@ class ToDoEventStateGrid extends ToDoEventState {
       );
 
   @override
-  Icon get stateIcon => Icon(Icons.line_style);
+  Icon get stateIcon => Icon(
+        Icons.line_style,
+        key: ValueKey<String>('Grid'),
+      );
 }

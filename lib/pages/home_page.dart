@@ -27,15 +27,21 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   late StreamSubscription<User?> loginStreamSubscription;
+  late AnimationController turnsAnimationController = AnimationController(
+    duration: Duration(milliseconds: 600),
+    vsync: this,
+  );
+
   FToast fToast = FToast();
   int _selectedIndex = 1;
 
   @override
   void initState() {
     fToast.init(context);
+
     final authBloc = Provider.of<AuthBloc>(context, listen: false);
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final todoProvider = Provider.of<ToDoProvider>(context, listen: false);
@@ -56,6 +62,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     loginStreamSubscription.cancel();
+    turnsAnimationController.dispose();
     super.dispose();
   }
 
@@ -93,21 +100,34 @@ class _HomePageState extends State<HomePage> {
                     return Scaffold(
                       key: scaffoldKey,
                       appBar: AppBar(
-                        title: snapshotToDoSearchState.searchWidget(
-                          searchProvider.searchValue ?? 'Just do it',
+                        title: AnimatedSwitcher(
+                          transitionBuilder: (child, animation) =>
+                              FadeTransition(
+                            child: child,
+                            opacity: animation,
+                          ),
+                          duration: Duration(milliseconds: 400),
+                          child: snapshotToDoSearchState.searchWidget(
+                            searchProvider.searchValue ?? 'Just do it',
+                          ),
                         ),
-                        leading: IconButton(
-                            icon: snapshotToDoSearchState.leftIcon,
-                            onPressed: () {
-                              if (snapshotToDoSearchState
-                                  is ToDoSearchStateFalse) {
-                                scaffoldKey.currentState!.openDrawer();
-                              } else {
-                                toDoSearchBloc
-                                    .add(ToDoSearchEvent.todoNotSearch);
-                                searchProvider.changeSearchValue(null);
-                              }
-                            }),
+                        leading: RotationTransition(
+                          alignment: Alignment.center,
+                          turns: turnsAnimationController,
+                          child: IconButton(
+                              icon: snapshotToDoSearchState.leftIcon,
+                              onPressed: () {
+                                if (snapshotToDoSearchState
+                                    is ToDoSearchStateFalse) {
+                                  scaffoldKey.currentState!.openDrawer();
+                                } else {
+                                  toDoSearchBloc
+                                      .add(ToDoSearchEvent.todoNotSearch);
+                                  searchProvider.changeSearchValue(null);
+                                  turnsAnimationController.animateTo(0.5, curve: Curves.easeInOutQuart);
+                                }
+                              }),
+                        ),
                         actions: [
                           ButtonBar(
                             children: [
@@ -117,19 +137,24 @@ class _HomePageState extends State<HomePage> {
                                     onPressed: () {
                                       toDoSearchBloc
                                           .add(ToDoSearchEvent.todoSearch);
+                                      turnsAnimationController.animateTo(0, curve: Curves.easeInOutQuart);
                                     },
                                     icon: Icon(Icons.search)),
                               IconButton(
-                                  onPressed: () {
-                                    if (snapshotToDoEventState
-                                        is ToDoEventStateList)
-                                      toDoViewBloc
-                                          .add(ToDoViewEvent.grid_event);
-                                    else
-                                      toDoViewBloc
-                                          .add(ToDoViewEvent.list_event);
-                                  },
-                                  icon: snapshotToDoEventState.stateIcon)
+                                onPressed: () {
+                                  if (snapshotToDoEventState
+                                      is ToDoEventStateList)
+                                    toDoViewBloc.add(ToDoViewEvent.grid_event);
+                                  else
+                                    toDoViewBloc.add(ToDoViewEvent.list_event);
+                                },
+                                icon: AnimatedSwitcher(
+                                    child: snapshotToDoEventState.stateIcon,
+                                    duration: const Duration(milliseconds: 400),
+                                    transitionBuilder: (child, animation) =>
+                                        ScaleTransition(
+                                            child: child, scale: animation)),
+                              ),
                             ],
                           )
                         ],
@@ -140,18 +165,21 @@ class _HomePageState extends State<HomePage> {
                                   firestore.getAllToDos(
                                       '${userSnapshot.data!.userId}'),
                                   false,
-                                  null, scaffoldKey)
+                                  null,
+                                  scaffoldKey)
                               : _selectedIndex == 1
                                   ? snapshotToDoEventState.getToDos(
                                       firestore.getAllToDos(
                                           '${userSnapshot.data!.userId}'),
                                       false,
-                                      false, scaffoldKey)
+                                      false,
+                                      scaffoldKey)
                                   : snapshotToDoEventState.getToDos(
                                       firestore.getAllToDos(
                                           '${userSnapshot.data!.userId}'),
                                       false,
-                                      true, scaffoldKey)
+                                      true,
+                                      scaffoldKey)
                           : CustomProgressBar(),
                       bottomNavigationBar: BottomNavigationBar(
                         items: [
@@ -293,7 +321,9 @@ class _HomePageState extends State<HomePage> {
                         onPressed: () {
                           Navigator.of(context).push(
                             SwipeablePageRoute(
-                                builder: (context) => EditAddToDo(scaffoldKey: scaffoldKey,)),
+                                builder: (context) => EditAddToDo(
+                                      scaffoldKey: scaffoldKey,
+                                    )),
                           );
                         },
                       ),

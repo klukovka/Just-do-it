@@ -16,7 +16,10 @@ class ToDoSearchStateTrue extends ToDoSearchState {
 
 class ToDoSearchStateFalse extends ToDoSearchState {
   @override
-  Widget searchWidget(String? value) => Text('$value');
+  Widget searchWidget(String? value) => Container(
+        child: Text('$value'),
+        alignment: Alignment.centerLeft,
+      );
 
   @override
   Icon get leftIcon => Icon(Icons.dehaze_outlined);

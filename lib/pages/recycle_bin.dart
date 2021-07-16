@@ -37,8 +37,15 @@ class RecycleBin extends StatelessWidget {
               return Scaffold(
                 key: scaffoldKey,
                 appBar: AppBar(
-                  title: snapshotToDoSearchState.searchWidget(
-                      searchProvider.searchValue ?? 'Recycle Bin'),
+                  title: AnimatedSwitcher(
+                    transitionBuilder: (child, animation) => FadeTransition(
+                      child: child,
+                      opacity: animation,
+                    ),
+                    duration: Duration(milliseconds: 400),
+                    child: snapshotToDoSearchState.searchWidget(
+                        searchProvider.searchValue ?? 'Recycle Bin'),
+                  ),
                   leading: IconButton(
                       icon: Icon(Icons.arrow_back),
                       onPressed: () {
@@ -59,13 +66,19 @@ class RecycleBin extends StatelessWidget {
                               },
                               icon: Icon(Icons.search)),
                         IconButton(
-                            onPressed: () {
-                              if (snapshotToDoEventState is ToDoEventStateList)
-                                toDoViewBloc.add(ToDoViewEvent.grid_event);
-                              else
-                                toDoViewBloc.add(ToDoViewEvent.list_event);
-                            },
-                            icon: snapshotToDoEventState.stateIcon)
+                          onPressed: () {
+                            if (snapshotToDoEventState is ToDoEventStateList)
+                              toDoViewBloc.add(ToDoViewEvent.grid_event);
+                            else
+                              toDoViewBloc.add(ToDoViewEvent.list_event);
+                          },
+                          icon: AnimatedSwitcher(
+                            child: snapshotToDoEventState.stateIcon,
+                            duration: const Duration(milliseconds: 400),
+                            transitionBuilder: (child, animation) =>
+                                ScaleTransition(child: child, scale: animation),
+                          ),
+                        ),
                       ],
                     )
                   ],
@@ -73,7 +86,8 @@ class RecycleBin extends StatelessWidget {
                 body: snapshotToDoEventState.getToDos(
                     firestoreService.getAllToDos('${snapshot.data!.userId}'),
                     true,
-                    null, scaffoldKey),
+                    null,
+                    scaffoldKey),
                 floatingActionButton: FloatingActionButton(
                   onPressed: () {
                     showDialog(
@@ -85,15 +99,14 @@ class RecycleBin extends StatelessWidget {
                             actions: [
                               TextButton(
                                   onPressed: () {
-                                    
                                     // ignore: deprecated_member_use
                                     scaffoldKey.currentState!.showSnackBar(
-                                  SnackBar(
-                                    backgroundColor: Colors.red[700],
-                                    duration: Duration(seconds: 2),
-                                    content: Text('All todos were deleted'),
-                                  ),
-                                ); 
+                                      SnackBar(
+                                        backgroundColor: Colors.red[700],
+                                        duration: Duration(seconds: 2),
+                                        content: Text('All todos were deleted'),
+                                      ),
+                                    );
 
                                     firestoreService.removeAllToDos(
                                         '${userProvider.userId}');

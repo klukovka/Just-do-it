@@ -63,6 +63,7 @@ class App extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Just do it',
         home: LoginPage(),
       ),
