@@ -7,7 +7,7 @@ import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:just_do_it/blocs/auth_bloc.dart';
 import 'package:just_do_it/pages/home_page.dart';
-import 'package:just_do_it/pages/reg_page.dart';
+import 'package:just_do_it/pages/register_page.dart';
 import 'package:just_do_it/pages/reset_password.dart';
 import 'package:just_do_it/providers/user_provider.dart';
 import 'package:just_do_it/widgets/custom_toast.dart';
