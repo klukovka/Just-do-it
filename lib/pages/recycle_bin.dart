@@ -5,9 +5,10 @@ import 'package:just_do_it/blocs/states/todo_search_state.dart';
 import 'package:just_do_it/blocs/todo_search_bloc.dart';
 import 'package:just_do_it/blocs/todo_view_bloc.dart';
 import 'package:just_do_it/blocs/user_bloc.dart';
-import 'package:just_do_it/providers/search_provider.dart';
 import 'package:just_do_it/providers/user_provider.dart';
 import 'package:just_do_it/services/firestore_service.dart';
+import 'package:just_do_it/widgets/arrow_recycle_bin.dart';
+import 'package:just_do_it/widgets/custom_app_bar.dart';
 import 'package:just_do_it/widgets/custom_progress_bar.dart';
 import 'package:provider/provider.dart';
 
@@ -19,9 +20,6 @@ class RecycleBin extends StatelessWidget {
   Widget build(BuildContext context) {
     final userBloc = Provider.of<UserBloc>(context, listen: false);
     final userProvider = Provider.of<UserProvider>(context, listen: false);
-    final toDoSearchBloc = BlocProvider.of<ToDoSearchBloc>(context);
-    final searchProvider = Provider.of<SearchProvider>(context, listen: false);
-    final toDoViewBloc = BlocProvider.of<ToDoViewBloc>(context);
     final FirestoreService firestoreService = FirestoreService();
 
     return StreamBuilder<UserProvider>(
@@ -36,52 +34,13 @@ class RecycleBin extends StatelessWidget {
                 builder: (context, snapshotToDoSearchState) {
               return Scaffold(
                 key: scaffoldKey,
-                appBar: AppBar(
-                  title: AnimatedSwitcher(
-                    transitionBuilder: (child, animation) => FadeTransition(
-                      child: child,
-                      opacity: animation,
-                    ),
-                    duration: Duration(milliseconds: 400),
-                    child: snapshotToDoSearchState.searchWidget(
-                        searchProvider.searchValue ?? 'Recycle Bin'),
+                appBar: CustomAppBar(
+                  searchState: snapshotToDoSearchState,
+                  title: 'Recycle Bin',
+                  leading: ArrowRecycleBin(
+                    state: snapshotToDoSearchState,
                   ),
-                  leading: IconButton(
-                      icon: Icon(Icons.arrow_back),
-                      onPressed: () {
-                        if (snapshotToDoSearchState is ToDoSearchStateFalse) {
-                          Navigator.of(context).pop();
-                        } else {
-                          toDoSearchBloc.add(ToDoSearchEvent.todoNotSearch);
-                          searchProvider.changeSearchValue(null);
-                        }
-                      }),
-                  actions: [
-                    ButtonBar(
-                      children: [
-                        if (snapshotToDoSearchState is ToDoSearchStateFalse)
-                          IconButton(
-                              onPressed: () {
-                                toDoSearchBloc.add(ToDoSearchEvent.todoSearch);
-                              },
-                              icon: Icon(Icons.search)),
-                        IconButton(
-                          onPressed: () {
-                            if (snapshotToDoEventState is ToDoEventStateList)
-                              toDoViewBloc.add(ToDoViewEvent.grid_event);
-                            else
-                              toDoViewBloc.add(ToDoViewEvent.list_event);
-                          },
-                          icon: AnimatedSwitcher(
-                            child: snapshotToDoEventState.stateIcon,
-                            duration: const Duration(milliseconds: 400),
-                            transitionBuilder: (child, animation) =>
-                                ScaleTransition(child: child, scale: animation),
-                          ),
-                        ),
-                      ],
-                    )
-                  ],
+                  eventState: snapshotToDoEventState,
                 ),
                 body: snapshotToDoEventState.getToDos(
                     firestoreService.getAllToDos('${snapshot.data!.userId}'),

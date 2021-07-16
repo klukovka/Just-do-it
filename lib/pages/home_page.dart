@@ -13,10 +13,11 @@ import 'package:just_do_it/models/app_user.dart';
 import 'package:just_do_it/pages/edit_add_todo.dart';
 import 'package:just_do_it/pages/login_page.dart';
 import 'package:just_do_it/pages/recycle_bin.dart';
-import 'package:just_do_it/providers/search_provider.dart';
 import 'package:just_do_it/providers/todo_provider.dart';
 import 'package:just_do_it/providers/user_provider.dart';
 import 'package:just_do_it/services/firestore_service.dart';
+import 'package:just_do_it/widgets/arrow_burger.dart';
+import 'package:just_do_it/widgets/custom_app_bar.dart';
 import 'package:just_do_it/widgets/custom_progress_bar.dart';
 import 'package:just_do_it/widgets/custom_toast.dart';
 import 'package:provider/provider.dart';
@@ -37,6 +38,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   FToast fToast = FToast();
   int _selectedIndex = 1;
+
+  void turning(double angle) {
+    turnsAnimationController.animateTo(angle, curve: Curves.easeInOutQuart);
+  }
 
   @override
   void initState() {
@@ -79,9 +84,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     final authBloc = context.read<AuthBloc>();
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final userBloc = context.read<UserBloc>();
-    final toDoViewBloc = BlocProvider.of<ToDoViewBloc>(context);
-    final toDoSearchBloc = BlocProvider.of<ToDoSearchBloc>(context);
-    final searchProvider = Provider.of<SearchProvider>(context, listen: false);
     final firestore = FirestoreService();
 
     return StreamBuilder<User?>(
@@ -99,66 +101,17 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       builder: (context, snapshotToDoSearchState) {
                     return Scaffold(
                       key: scaffoldKey,
-                      appBar: AppBar(
-                        title: AnimatedSwitcher(
-                          transitionBuilder: (child, animation) =>
-                              FadeTransition(
-                            child: child,
-                            opacity: animation,
-                          ),
-                          duration: Duration(milliseconds: 400),
-                          child: snapshotToDoSearchState.searchWidget(
-                            searchProvider.searchValue ?? 'Just do it',
-                          ),
+                      appBar: CustomAppBar(
+                        turnsAnimationController: turnsAnimationController,
+                        eventState: snapshotToDoEventState,
+                        leading: ArrowBurger(
+                          scaffoldKey: scaffoldKey,
+                          searchState: snapshotToDoSearchState,
+                          turnsAnimationController: turnsAnimationController,
                         ),
-                        leading: RotationTransition(
-                          alignment: Alignment.center,
-                          turns: turnsAnimationController,
-                          child: IconButton(
-                              icon: snapshotToDoSearchState.leftIcon,
-                              onPressed: () {
-                                if (snapshotToDoSearchState
-                                    is ToDoSearchStateFalse) {
-                                  scaffoldKey.currentState!.openDrawer();
-                                } else {
-                                  toDoSearchBloc
-                                      .add(ToDoSearchEvent.todoNotSearch);
-                                  searchProvider.changeSearchValue(null);
-                                  turnsAnimationController.animateTo(0.5, curve: Curves.easeInOutQuart);
-                                }
-                              }),
-                        ),
-                        actions: [
-                          ButtonBar(
-                            children: [
-                              if (snapshotToDoSearchState
-                                  is ToDoSearchStateFalse)
-                                IconButton(
-                                    onPressed: () {
-                                      toDoSearchBloc
-                                          .add(ToDoSearchEvent.todoSearch);
-                                      turnsAnimationController.animateTo(0, curve: Curves.easeInOutQuart);
-                                    },
-                                    icon: Icon(Icons.search)),
-                              IconButton(
-                                onPressed: () {
-                                  if (snapshotToDoEventState
-                                      is ToDoEventStateList)
-                                    toDoViewBloc.add(ToDoViewEvent.grid_event);
-                                  else
-                                    toDoViewBloc.add(ToDoViewEvent.list_event);
-                                },
-                                icon: AnimatedSwitcher(
-                                    child: snapshotToDoEventState.stateIcon,
-                                    duration: const Duration(milliseconds: 400),
-                                    transitionBuilder: (child, animation) =>
-                                        ScaleTransition(
-                                            child: child, scale: animation)),
-                              ),
-                            ],
-                          )
-                        ],
-                      ),
+                        searchState: snapshotToDoSearchState,
+                        title: 'Just do it!',
+                      ),                   
                       body: userSnapshot.data!.userId != null
                           ? _selectedIndex == 0
                               ? snapshotToDoEventState.getToDos(
