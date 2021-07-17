@@ -8,6 +8,7 @@ import 'package:just_do_it/blocs/user_bloc.dart';
 import 'package:just_do_it/providers/user_provider.dart';
 import 'package:just_do_it/services/firestore_service.dart';
 import 'package:just_do_it/widgets/arrow_recycle_bin.dart';
+import 'package:just_do_it/widgets/custom_alert_dialog.dart';
 import 'package:just_do_it/widgets/custom_app_bar.dart';
 import 'package:just_do_it/widgets/custom_progress_bar.dart';
 import 'package:provider/provider.dart';
@@ -51,34 +52,16 @@ class RecycleBin extends StatelessWidget {
                   onPressed: () {
                     showDialog(
                         context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            title: Text('Attention!'),
-                            content: Text('Do you want to delete all todos?'),
-                            actions: [
-                              TextButton(
-                                  onPressed: () {
-                                    // ignore: deprecated_member_use
-                                    scaffoldKey.currentState!.showSnackBar(
-                                      SnackBar(
-                                        backgroundColor: Colors.red[700],
-                                        duration: Duration(seconds: 2),
-                                        content: Text('All todos were deleted'),
-                                      ),
-                                    );
-
-                                    firestoreService.removeAllToDos(
-                                        '${userProvider.userId}');
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text('Yes')),
-                              TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text('No'))
-                            ],
-                          );
+                        builder: (_) {
+                          return CustomAlertDialog(
+                              content: 'Do you want to delete all todos?',
+                              scaffoldKey: scaffoldKey,
+                              snackBarText: 'All todos were deleted',
+                              mainContext: context,
+                              func: () {
+                                firestoreService
+                                    .removeAllToDos('${userProvider.userId}');
+                              });
                         });
                   },
                   child: Icon(Icons.delete_forever),

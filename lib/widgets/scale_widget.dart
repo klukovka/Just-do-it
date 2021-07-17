@@ -9,7 +9,7 @@ class ScaleWidget extends StatefulWidget {
 }
 
 class _ScaleWidgetState extends State<ScaleWidget>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late final AnimationController _controller = AnimationController(
     duration: const Duration(milliseconds: 1000),
     vsync: this,
@@ -20,10 +20,17 @@ class _ScaleWidgetState extends State<ScaleWidget>
   );
 
   @override
+  void initState() {
+    _controller.addListener(() {
+      setState(() {});
+    });
+    super.initState();
+  }
+
+  @override
   void dispose() {
-    _controller.animateTo(0);
-    super.dispose();
     _controller.dispose();
+    super.dispose();
   }
 
   @override

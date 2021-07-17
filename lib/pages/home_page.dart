@@ -17,6 +17,7 @@ import 'package:just_do_it/providers/todo_provider.dart';
 import 'package:just_do_it/providers/user_provider.dart';
 import 'package:just_do_it/services/firestore_service.dart';
 import 'package:just_do_it/widgets/arrow_burger.dart';
+import 'package:just_do_it/widgets/custom_alert_dialog.dart';
 import 'package:just_do_it/widgets/custom_app_bar.dart';
 import 'package:just_do_it/widgets/custom_progress_bar.dart';
 import 'package:just_do_it/widgets/custom_toast.dart';
@@ -107,7 +108,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         ),
                         searchState: snapshotToDoSearchState,
                         title: 'Just do it!',
-                      ),                   
+                      ),
                       body: userSnapshot.data!.userId != null
                           ? _selectedIndex == 0
                               ? snapshotToDoEventState.getToDos(
@@ -223,37 +224,26 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       onPressed: () {
                                         showDialog(
                                             context: context,
-                                            builder: (context) {
-                                              return AlertDialog(
-                                                title: Text('Attention!'),
-                                                content: Text(
-                                                    'Do you really want to delete your account?'),
-                                                actions: [
-                                                  TextButton(
-                                                      onPressed: () {
-                                                        authBloc.logoutGoogle();
-                                                        firestore
-                                                            .removeAllToDos(
+                                            builder: (_) {
+                                              return CustomAlertDialog(
+                                                  content:
+                                                      'Do you really want to delete your account?',
+                                                  scaffoldKey: scaffoldKey,
+                                                  snackBarText:
+                                                      'Account have been already deleted',
+                                                  mainContext: context,
+                                                  func: () {
+                                                    authBloc.logoutGoogle();
+                                                    firestore
+                                                        .removeAllToDos(
+                                                            '${userSnapshot.data!.userId}')
+                                                        .then((value) => firestore
+                                                            .removeUser(
                                                                 '${userSnapshot.data!.userId}')
-                                                            .then((value) => firestore
-                                                                .removeUser(
-                                                                    '${userSnapshot.data!.userId}')
-                                                                .then((value) =>
-                                                                    authBloc
-                                                                        .deleteUser()));
-
-                                                        Navigator.of(context)
-                                                            .pop();
-                                                      },
-                                                      child: Text('Yes')),
-                                                  TextButton(
-                                                      onPressed: () {
-                                                        Navigator.of(context)
-                                                            .pop();
-                                                      },
-                                                      child: Text('No'))
-                                                ],
-                                              );
+                                                            .then((value) =>
+                                                                authBloc
+                                                                    .deleteUser()));
+                                                  });
                                             });
                                       },
                                       child: Text('Delete an account'),

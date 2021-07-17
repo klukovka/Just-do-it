@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:just_do_it/models/todo.dart';
 import 'package:just_do_it/services/firestore_service.dart';
+import 'package:just_do_it/widgets/custom_alert_dialog.dart';
 
 class SlidableToDo extends StatelessWidget {
   final Widget child;
@@ -26,33 +27,16 @@ class SlidableToDo extends StatelessWidget {
           onTap: () {
             showDialog(
                 context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    title: Text('Attention!'),
-                    content: Text('Do you want to move todo to recycle bin?'),
-                    actions: [
-                      TextButton(
-                          onPressed: () {
-                            todo.inTrash = true;
-                            // ignore: deprecated_member_use
-                                scaffoldKey.currentState!.showSnackBar(
-                              SnackBar(
-                                backgroundColor: Colors.red[700],
-                                duration: Duration(seconds: 2),
-                                content: Text('Todo moved to recycle bin'),
-                              ),
-                            ); 
-                            firestoreService.saveToDo(todo);
-                            Navigator.of(context).pop();
-                          },
-                          child: Text('Yes')),
-                      TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: Text('No'))
-                    ],
-                  );
+                builder: (_) {
+                  return CustomAlertDialog(
+                      content: 'Do you want to move todo to recycle bin?',
+                      scaffoldKey: scaffoldKey,
+                      snackBarText: 'Todo moved to recycle bin',
+                      mainContext: context,
+                      func: () {
+                        todo.inTrash = true;
+                        firestoreService.saveToDo(todo);
+                      });
                 });
           },
         )
@@ -65,13 +49,13 @@ class SlidableToDo extends StatelessWidget {
         onTap: () {
           todo.inTrash = false;
           // ignore: deprecated_member_use
-            scaffoldKey.currentState!.showSnackBar(
+          scaffoldKey.currentState!.showSnackBar(
             SnackBar(
               backgroundColor: Colors.green,
               duration: Duration(seconds: 2),
               content: Text('Todo was restored'),
             ),
-          ); 
+          );
           firestoreService.saveToDo(todo);
         },
       ),
@@ -82,32 +66,15 @@ class SlidableToDo extends StatelessWidget {
         onTap: () {
           showDialog(
               context: context,
-              builder: (context) {
-                return AlertDialog(
-                  title: Text('Attention!'),
-                  content: Text('Do you want to delete this todo?'),
-                  actions: [
-                    TextButton(
-                        onPressed: () {
-                          // ignore: deprecated_member_use
-                            scaffoldKey.currentState!.showSnackBar(
-                            SnackBar(
-                              backgroundColor: Colors.redAccent[700],
-                              duration: Duration(seconds: 2),
-                              content: Text('Todo was deleted'),
-                            ),
-                          ); 
-                          firestoreService.removeToDo('${todo.toDoId}');
-                          Navigator.of(context).pop();
-                        },
-                        child: Text('Yes')),
-                    TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: Text('No'))
-                  ],
-                );
+              builder: (_) {
+                return CustomAlertDialog(
+                    content: 'Do you want to delete this todo?',
+                    scaffoldKey: scaffoldKey,
+                    snackBarText: 'Todo was deleted',
+                    mainContext: context,
+                    func: () {
+                      firestoreService.removeToDo('${todo.toDoId}');
+                    });
               });
         },
       )

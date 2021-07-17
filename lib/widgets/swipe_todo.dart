@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:just_do_it/models/todo.dart';
 import 'package:just_do_it/services/firestore_service.dart';
+import 'package:just_do_it/widgets/custom_alert_dialog.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:swipe_to/swipe_to.dart';
 
 class SwipeToDo extends StatelessWidget {
   final Widget child;
   final ToDo todo;
- final  GlobalKey<ScaffoldState> scaffoldKey;
+  final GlobalKey<ScaffoldState> scaffoldKey;
 
-  const SwipeToDo({Key? key, required this.child, required this.todo, required this.scaffoldKey})
+  const SwipeToDo(
+      {Key? key,
+      required this.child,
+      required this.todo,
+      required this.scaffoldKey})
       : super(key: key);
 
   @override
@@ -21,34 +26,16 @@ class SwipeToDo extends StatelessWidget {
       onLeftSwipe: () {
         showDialog(
             context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: Text('Attention!'),
-                content: Text('Do you want to move todo to recycle bin?'),
-                actions: [
-                  TextButton(
-                      onPressed: () {
-                        todo.inTrash = true;
-                        // ignore: deprecated_member_use
-                           scaffoldKey.currentState!.showSnackBar(
-                              SnackBar(
-                                backgroundColor: Colors.red[700],
-                                duration: Duration(seconds: 2),
-                                content: Text('Todo moved to recycle bin'),
-                              ),
-                            ); 
-                        firestoreService.saveToDo(todo);
-
-                        Navigator.of(context).pop();
-                      },
-                      child: Text('Yes')),
-                  TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: Text('No'))
-                ],
-              );
+            builder: (_) {
+              return CustomAlertDialog(
+                  content: 'Do you want to move todo to recycle bin?',
+                  scaffoldKey: scaffoldKey,
+                  snackBarText: 'Todo moved to recycle bin',
+                  mainContext: context,
+                  func: () {
+                    todo.inTrash = true;
+                    firestoreService.saveToDo(todo);
+                  });
             });
       },
       iconOnLeftSwipe: Icons.delete,
