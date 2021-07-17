@@ -5,6 +5,7 @@ import 'package:just_do_it/providers/search_provider.dart';
 import 'package:just_do_it/services/firestore_service.dart';
 import 'package:just_do_it/widgets/custom_progress_bar.dart';
 import 'package:just_do_it/widgets/empty_list.dart';
+import 'package:just_do_it/widgets/scale_widget.dart';
 import 'package:just_do_it/widgets/slidable_todo.dart';
 import 'package:just_do_it/widgets/swipe_todo.dart';
 import 'package:just_do_it/widgets/todo_line.dart';
@@ -34,11 +35,13 @@ class ToDos extends StatelessWidget {
     return StreamBuilder<List<ToDo>>(
         stream: todos,
         builder: (context, snapshot) {
-          if (!snapshot.hasData) return CustomProgressBar();
+          if (!snapshot.hasData) return ScaleWidget(child: CustomProgressBar());
 
           if (snapshot.hasError)
-            return Center(
-              child: Text('Error'),
+            return ScaleWidget(
+              child: Center(
+                child: Text('Error'),
+              ),
             );
 
           List<ToDo> list = snapshot.data ?? [];
@@ -59,16 +62,18 @@ class ToDos extends StatelessWidget {
               return true;
           }).toList();
 
-          if (list.length == 0) return EmptyList();
+          if (list.length == 0) return ScaleWidget(child: EmptyList());
 
           if (state is ToDoEventStateList) {
             return ListView.separated(
-              itemBuilder: (context, index) => SlidableToDo(
-                scaffoldKey: scaffoldKey,
-                todo: list[index],
-                child: ToDoLine(
-                  todo: list[index],
+              itemBuilder: (context, index) => ScaleWidget(
+                child: SlidableToDo(
                   scaffoldKey: scaffoldKey,
+                  todo: list[index],
+                  child: ToDoLine(
+                    todo: list[index],
+                    scaffoldKey: scaffoldKey,
+                  ),
                 ),
               ),
               itemCount: list.length,
@@ -80,21 +85,25 @@ class ToDos extends StatelessWidget {
             List<Widget> widgets = [];
             for (int i = 0; i < list.length; i++) {
               if (list[i].inTrash == true) {
-                widgets.add(SlidableToDo(
-                  todo: list[i],
-                  child: ToDoLine(
+                widgets.add(ScaleWidget(
+                  child: SlidableToDo(
                     todo: list[i],
+                    child: ToDoLine(
+                      todo: list[i],
+                      scaffoldKey: scaffoldKey,
+                    ),
                     scaffoldKey: scaffoldKey,
                   ),
-                  scaffoldKey: scaffoldKey,
                 ));
               } else {
-                widgets.add(SwipeToDo(
-                  scaffoldKey: scaffoldKey,
-                  todo: list[i],
-                  child: ToDoLine(
-                    todo: list[i],
+                widgets.add(ScaleWidget(
+                  child: SwipeToDo(
                     scaffoldKey: scaffoldKey,
+                    todo: list[i],
+                    child: ToDoLine(
+                      todo: list[i],
+                      scaffoldKey: scaffoldKey,
+                    ),
                   ),
                 ));
               }
