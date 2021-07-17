@@ -9,7 +9,11 @@ class ArrowBurger extends StatefulWidget {
   ToDoSearchState searchState;
   GlobalKey<ScaffoldState> scaffoldKey;
   AnimationController turnsAnimationController;
-  ArrowBurger({Key? key, required this.searchState, required this.scaffoldKey, required this.turnsAnimationController})
+  ArrowBurger(
+      {Key? key,
+      required this.searchState,
+      required this.scaffoldKey,
+      required this.turnsAnimationController})
       : super(key: key);
 
   @override
@@ -32,10 +36,14 @@ class _ArrowBurgerState extends State<ArrowBurger>
             if (widget.searchState is ToDoSearchStateFalse) {
               widget.scaffoldKey.currentState!.openDrawer();
             } else {
-              toDoSearchBloc.add(ToDoSearchEvent.todoNotSearch);
-              searchProvider.changeSearchValue(null);
-              widget.turnsAnimationController.animateTo(0.5,
-                  curve: Curves.easeInOutQuart);
+              widget.turnsAnimationController
+                  .animateTo(0.25, curve: Curves.easeInOutQuart)
+                  .whenComplete(() {
+                toDoSearchBloc.add(ToDoSearchEvent.todoNotSearch);
+                searchProvider.changeSearchValue(null);
+                widget.turnsAnimationController
+                    .animateTo(0.5, curve: Curves.easeInOutQuart);
+              });
             }
           }),
     );

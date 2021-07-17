@@ -39,8 +39,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             if (searchState is ToDoSearchStateFalse)
               IconButton(
                   onPressed: () {
-                    toDoSearchBloc.add(ToDoSearchEvent.todoSearch);
-                    turnsAnimationController!.animateTo(0);
+                    turnsAnimationController!.animateTo(0.25).whenComplete(() {
+                      toDoSearchBloc.add(ToDoSearchEvent.todoSearch);
+                      turnsAnimationController!.animateTo(0);
+                    });
                   },
                   icon: Icon(Icons.search)),
             IconButton(
