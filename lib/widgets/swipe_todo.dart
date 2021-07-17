@@ -27,6 +27,15 @@ class SwipeToDo extends StatelessWidget {
         showDialog(
             context: context,
             builder: (_) {
+              if (todo.inTrash == true)
+                return CustomAlertDialog(
+                    content: 'Do you want to delete this todo?',
+                    scaffoldKey: scaffoldKey,
+                    snackBarText: 'Todo was deleted',
+                    mainContext: context,
+                    func: () {
+                      firestoreService.removeToDo('${todo.toDoId}');
+                    });
               return CustomAlertDialog(
                   content: 'Do you want to move todo to recycle bin?',
                   scaffoldKey: scaffoldKey,
@@ -39,7 +48,27 @@ class SwipeToDo extends StatelessWidget {
             });
       },
       iconOnLeftSwipe: Icons.delete,
-      iconColor: Colors.red,
+      onRightSwipe: todo.inTrash == true
+          ? () {
+              showDialog(
+                  context: context,
+                  builder: (_) {
+                    return CustomAlertDialog(
+                        content: 'Do you want to restore the todo?',
+                        scaffoldKey: scaffoldKey,
+                        snackBarText: 'Todo was restored',
+                        mainContext: context,
+                        yesColor: Colors.blue,
+                        noColor: const Color(0xFFD50000),
+                        snackBarColor: Colors.green,
+                        func: () {
+                          todo.inTrash = false;                         
+                          firestoreService.saveToDo(todo);
+                        });
+                  });
+            }
+          : null,
+      iconOnRightSwipe: Icons.restore,
     );
   }
 }

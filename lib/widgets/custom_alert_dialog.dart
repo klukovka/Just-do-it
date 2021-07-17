@@ -7,6 +7,9 @@ class CustomAlertDialog extends StatelessWidget {
   final String snackBarText;
   final BuildContext mainContext;
   final Function() func;
+  final Color yesColor;
+  final Color noColor;
+  final Color snackBarColor;
   const CustomAlertDialog({
     Key? key,
     required this.content,
@@ -14,6 +17,9 @@ class CustomAlertDialog extends StatelessWidget {
     required this.snackBarText,
     required this.mainContext,
     required this.func,
+    this.yesColor = const Color(0xFFD50000),
+    this.noColor = Colors.blue,
+    this.snackBarColor = const Color(0xFFD50000),
   }) : super(key: key);
 
   @override
@@ -29,7 +35,7 @@ class CustomAlertDialog extends StatelessWidget {
                 // ignore: deprecated_member_use
                 scaffoldKey.currentState!.showSnackBar(
                   SnackBar(
-                    backgroundColor: Colors.red[700],
+                    backgroundColor: snackBarColor,
                     duration: Duration(seconds: 2),
                     content: Text(snackBarText),
                   ),
@@ -37,12 +43,18 @@ class CustomAlertDialog extends StatelessWidget {
 
                 Navigator.of(mainContext).pop();
               },
-              child: Text('Yes', style: TextStyle(color: Colors.red[700]),)),
+              child: Text(
+                'Yes',
+                style: TextStyle(color: yesColor),
+              )),
           TextButton(
               onPressed: () {
                 Navigator.of(mainContext).pop();
               },
-              child: Text('No'))
+              child: Text(
+                'No',
+                style: TextStyle(color: noColor),
+              ))
         ],
       ),
     );

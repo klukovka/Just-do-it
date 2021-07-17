@@ -6,7 +6,6 @@ import 'package:just_do_it/services/firestore_service.dart';
 import 'package:just_do_it/widgets/custom_progress_bar.dart';
 import 'package:just_do_it/widgets/empty_list.dart';
 import 'package:just_do_it/widgets/scale_widget.dart';
-import 'package:just_do_it/widgets/slidable_todo.dart';
 import 'package:just_do_it/widgets/swipe_todo.dart';
 import 'package:just_do_it/widgets/todo_line.dart';
 import 'package:provider/provider.dart';
@@ -67,7 +66,7 @@ class ToDos extends StatelessWidget {
           if (state is ToDoEventStateList) {
             return ListView.separated(
               itemBuilder: (context, index) => ScaleWidget(
-                child: SlidableToDo(
+                child: SwipeToDo(
                   scaffoldKey: scaffoldKey,
                   todo: list[index],
                   child: ToDoLine(
@@ -83,7 +82,19 @@ class ToDos extends StatelessWidget {
             );
           } else {
             List<Widget> widgets = [];
-            for (int i = 0; i < list.length; i++) {
+            list.forEach((element) {
+              widgets.add(ScaleWidget(
+                child: SwipeToDo(
+                  scaffoldKey: scaffoldKey,
+                  todo: element,
+                  child: ToDoLine(
+                    todo: element,
+                    scaffoldKey: scaffoldKey,
+                  ),
+                ),
+              ));
+            });
+            /*  for (int i = 0; i < list.length; i++) {
               if (list[i].inTrash == true) {
                 widgets.add(ScaleWidget(
                   child: SlidableToDo(
@@ -107,7 +118,7 @@ class ToDos extends StatelessWidget {
                   ),
                 ));
               }
-            }
+            } */
             return GridView.count(
               crossAxisCount: 2,
               mainAxisSpacing: 8,
