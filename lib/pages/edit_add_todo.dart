@@ -10,6 +10,7 @@ import 'package:just_do_it/blocs/validation_todo_bloc.dart';
 import 'package:just_do_it/models/todo.dart';
 import 'package:just_do_it/providers/todo_provider.dart';
 import 'package:just_do_it/providers/user_provider.dart';
+import 'package:just_do_it/widgets/colored_box.dart';
 import 'package:just_do_it/widgets/custom_toast.dart';
 import 'package:provider/provider.dart';
 
@@ -105,16 +106,6 @@ class _EditAddToDoState extends State<EditAddToDo> {
         });
   }
 
-  Widget coloredBox(ColorState state, Color color) {
-    return SizedBox(
-      width: state.color == color ? 40 : 30,
-      height: state.color == color ? 40 : 30,
-      child: Container(
-        color: color,
-      ),
-    );
-  }
-
   Widget colorsWidget(ValidationToDoBloc bloc) {
     final todoProvider = Provider.of<ToDoProvider>(context);
     ColorBloc _bloc = BlocProvider.of<ColorBloc>(context);
@@ -130,76 +121,94 @@ class _EditAddToDoState extends State<EditAddToDo> {
               child: ListTile(
                 leading: Icon(Icons.color_lens),
                 title: Text('Color'),
-                subtitle: AnimatedContainer(
-                  duration: Duration(milliseconds: 500),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      GestureDetector(
-                        child: coloredBox(snapshot, Colors.red),
-                        onTap: () {
-                          _bloc.add(ColorEvent.red);
-                          bloc.changeColor(
-                              ColorState(color: Colors.red, colorName: 'red'));
-                          todoProvider.changeColor('red');
-                        },
+                subtitle: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                      child: BoxColored(
+                        colorState: snapshot,
+                        color: Colors.red,
                       ),
-                      GestureDetector(
-                        child: coloredBox(snapshot, Colors.orange),
-                        onTap: () {
-                          _bloc.add(ColorEvent.orange);
-                          bloc.changeColor(ColorState(
-                              color: Colors.orange, colorName: 'orange'));
-                          todoProvider.changeColor('orange');
-                        },
+                      onTap: () {
+                        _bloc.add(ColorEvent.red);
+                        bloc.changeColor(
+                            ColorState(color: Colors.red, colorName: 'red'));
+                        todoProvider.changeColor('red');
+                      },
+                    ),
+                    GestureDetector(
+                      child: BoxColored(
+                        colorState: snapshot,
+                        color: Colors.orange,
                       ),
-                      GestureDetector(
-                        child: coloredBox(snapshot, Colors.yellow),
-                        onTap: () {
-                          _bloc.add(ColorEvent.yellow);
-                          bloc.changeColor(ColorState(
-                              color: Colors.yellow, colorName: 'yellow'));
-                          todoProvider.changeColor('yellow');
-                        },
+                      onTap: () {
+                        _bloc.add(ColorEvent.orange);
+                        bloc.changeColor(ColorState(
+                            color: Colors.orange, colorName: 'orange'));
+                        todoProvider.changeColor('orange');
+                      },
+                    ),
+                    GestureDetector(
+                      child: BoxColored(
+                        colorState: snapshot,
+                        color: Colors.yellow,
                       ),
-                      GestureDetector(
-                        child: coloredBox(snapshot, Colors.green),
-                        onTap: () {
-                          _bloc.add(ColorEvent.green);
-                          bloc.changeColor(ColorState(
-                              color: Colors.green, colorName: 'green'));
-                          todoProvider.changeColor('green');
-                        },
+                      onTap: () {
+                        _bloc.add(ColorEvent.yellow);
+                        bloc.changeColor(ColorState(
+                            color: Colors.yellow, colorName: 'yellow'));
+                        todoProvider.changeColor('yellow');
+                      },
+                    ),
+                    GestureDetector(
+                      child: BoxColored(
+                        colorState: snapshot,
+                        color: Colors.green,
                       ),
-                      GestureDetector(
-                        child: coloredBox(snapshot, Colors.lightBlue),
-                        onTap: () {
-                          _bloc.add(ColorEvent.blue);
-                          bloc.changeColor(ColorState(
-                              color: Colors.lightBlue, colorName: 'blue'));
-                          todoProvider.changeColor('blue');
-                        },
+                      onTap: () {
+                        _bloc.add(ColorEvent.green);
+                        bloc.changeColor(ColorState(
+                            color: Colors.green, colorName: 'green'));
+                        todoProvider.changeColor('green');
+                      },
+                    ),
+                    GestureDetector(
+                      child: BoxColored(
+                        colorState: snapshot,
+                        color: Colors.lightBlue,
                       ),
-                      GestureDetector(
-                        child: coloredBox(snapshot, Colors.blue),
-                        onTap: () {
-                          _bloc.add(ColorEvent.darkblue);
-                          bloc.changeColor(ColorState(
-                              color: Colors.blue, colorName: 'darkblue'));
-                          todoProvider.changeColor('darkblue');
-                        },
+                      onTap: () {
+                        _bloc.add(ColorEvent.blue);
+                        bloc.changeColor(ColorState(
+                            color: Colors.lightBlue, colorName: 'blue'));
+                        todoProvider.changeColor('blue');
+                      },
+                    ),
+                    GestureDetector(
+                      child: BoxColored(
+                        colorState: snapshot,
+                        color: Colors.blue,
                       ),
-                      GestureDetector(
-                        child: coloredBox(snapshot, Colors.purple),
-                        onTap: () {
-                          _bloc.add(ColorEvent.purple);
-                          bloc.changeColor(ColorState(
-                              color: Colors.purple, colorName: 'purple'));
-                          todoProvider.changeColor('purple');
-                        },
+                      onTap: () {
+                        _bloc.add(ColorEvent.darkblue);
+                        bloc.changeColor(ColorState(
+                            color: Colors.blue, colorName: 'darkblue'));
+                        todoProvider.changeColor('darkblue');
+                      },
+                    ),
+                    GestureDetector(
+                      child: BoxColored(
+                        colorState: snapshot,
+                        color: Colors.purple,
                       ),
-                    ],
-                  ),
+                      onTap: () {
+                        _bloc.add(ColorEvent.purple);
+                        bloc.changeColor(ColorState(
+                            color: Colors.purple, colorName: 'purple'));
+                        todoProvider.changeColor('purple');
+                      },
+                    ),
+                  ],
                 ),
               ),
             );
