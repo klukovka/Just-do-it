@@ -6,10 +6,9 @@ import 'package:just_do_it/services/firestore_service.dart';
 import 'package:provider/provider.dart';
 import 'package:swipeable_page_route/swipeable_page_route.dart';
 
-// ignore: must_be_immutable
 class ToDoLine extends StatelessWidget {
-  ToDo todo;
-   GlobalKey<ScaffoldState> scaffoldKey;
+  final ToDo todo;
+  final GlobalKey<ScaffoldState> scaffoldKey;
   ToDoLine({required this.todo, required this.scaffoldKey});
 
   @override
@@ -43,7 +42,7 @@ class ToDoLine extends StatelessWidget {
             else
               todo.done = false;
             // ignore: deprecated_member_use
-           scaffoldKey.currentState!.showSnackBar(
+            scaffoldKey.currentState!.showSnackBar(
               SnackBar(
                 backgroundColor:
                     todo.done == true ? Colors.green : Colors.blueAccent[700],

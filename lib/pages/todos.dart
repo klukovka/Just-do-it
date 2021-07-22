@@ -10,7 +10,7 @@ import 'package:just_do_it/widgets/swipe_todo.dart';
 import 'package:just_do_it/widgets/todo_line.dart';
 import 'package:provider/provider.dart';
 
-// ignore: must_be_immutable
+
 class ToDos extends StatelessWidget {
   final FirestoreService firestoreService = FirestoreService();
   final Stream<List<ToDo>> todos;

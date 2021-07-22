@@ -12,10 +12,9 @@ import 'package:just_do_it/widgets/colored_box.dart';
 import 'package:just_do_it/widgets/custom_toast.dart';
 import 'package:provider/provider.dart';
 
-// ignore: must_be_immutable
 class EditAddToDo extends StatefulWidget {
-  ToDo? todo;
-  GlobalKey<ScaffoldState> scaffoldKey;
+  final ToDo? todo;
+  final GlobalKey<ScaffoldState> scaffoldKey;
   EditAddToDo({Key? key, this.todo, required this.scaffoldKey})
       : super(key: key);
 

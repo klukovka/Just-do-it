@@ -6,9 +6,9 @@ import 'package:just_do_it/providers/search_provider.dart';
 import 'package:provider/provider.dart';
 
 class ArrowBurger extends StatefulWidget {
-  ToDoSearchState searchState;
-  GlobalKey<ScaffoldState> scaffoldKey;
-  AnimationController turnsAnimationController;
+  final ToDoSearchState searchState;
+  final GlobalKey<ScaffoldState> scaffoldKey;
+  final AnimationController turnsAnimationController;
   ArrowBurger(
       {Key? key,
       required this.searchState,
